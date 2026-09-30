@@ -8,6 +8,10 @@ import {
   AuthResponse,
   Faq,
   Article,
+  Affiliate,
+  AffiliateInput,
+  AffiliateDetails,
+  AffiliatePayout,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -200,6 +204,38 @@ export const adminApi = {
   // Activity logs
   getActivityLogs: (limit: number = 100): Promise<ActivityLog[]> =>
     request(`/admin/logs?limit=${limit}`),
+
+  // Affiliates
+  getAffiliates: (): Promise<Affiliate[]> => request('/affiliates'),
+
+  getAffiliate: (id: string): Promise<AffiliateDetails> => request(`/affiliates/${id}`),
+
+  createAffiliate: (data: AffiliateInput): Promise<Affiliate> =>
+    request('/affiliates', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateAffiliate: (id: string, updates: Partial<AffiliateInput>): Promise<Affiliate> =>
+    request(`/affiliates/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    }),
+
+  deleteAffiliate: (id: string): Promise<void> =>
+    request(`/affiliates/${id}`, { method: 'DELETE' }),
+
+  createAffiliatePayout: (
+    id: string,
+    data: { amount: number; note?: string },
+  ): Promise<AffiliatePayout> =>
+    request(`/affiliates/${id}/payouts`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  deleteAffiliatePayout: (id: string, payoutId: string): Promise<void> =>
+    request(`/affiliates/${id}/payouts/${payoutId}`, { method: 'DELETE' }),
 
   // FAQs
   getFaqs: (): Promise<Faq[]> => request('/faqs?includeInactive=true'),

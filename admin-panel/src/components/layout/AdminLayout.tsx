@@ -19,6 +19,7 @@ const navigation: NavItem[] = [
   { name: 'Reviews', href: '/reviews', icon: '⭐' },
   { name: 'FAQs', href: '/faqs', icon: '❓' },
   { name: 'Articles', href: '/articles', icon: '📰' },
+  { name: 'Affiliates', href: '/affiliates', icon: '🤝' },
   { name: 'Activity Logs', href: '/logs', icon: '📝' },
 ];
 

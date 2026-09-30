@@ -59,7 +59,11 @@ export interface Order {
   items: OrderItem[];
   subtotal: number;
   shipping: number;
+  discount: number;
   total: number;
+  affiliateId?: string | null;
+  affiliateCode?: string | null;
+  commission?: number;
   status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled';
   paymentStatus: 'pending' | 'paid' | 'failed' | 'refunded';
   paymentMethod: string;
@@ -143,3 +147,57 @@ export interface Article {
   updatedAt: string;
 }
 
+
+export interface AffiliateStats {
+  paidOrders: number;
+  pendingOrders: number;
+  sales: number;
+  commissionEarned: number;
+  paidOut: number;
+  owed: number;
+}
+
+export interface Affiliate {
+  id: string;
+  name: string;
+  code: string;
+  email?: string | null;
+  commissionPercent: number;
+  discountPercent: number;
+  clicks: number;
+  isActive: boolean;
+  notes?: string | null;
+  link: string;
+  stats: AffiliateStats;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type AffiliateInput = Pick<
+  Affiliate,
+  'name' | 'code' | 'commissionPercent' | 'discountPercent' | 'isActive'
+> & { email?: string; notes?: string };
+
+export interface AffiliateOrder {
+  id: string;
+  orderNumber: string;
+  createdAt: string;
+  status: string;
+  paymentStatus: string;
+  subtotal: number;
+  discount: number;
+  total: number;
+  commission: number;
+}
+
+export interface AffiliatePayout {
+  id: string;
+  amount: number;
+  note?: string | null;
+  createdAt: string;
+}
+
+export interface AffiliateDetails extends Affiliate {
+  orders: AffiliateOrder[];
+  payouts: AffiliatePayout[];
+}

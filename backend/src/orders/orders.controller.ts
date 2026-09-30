@@ -42,7 +42,7 @@ export class OrdersController {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin' || req.user?.role === 'manager';
     const orders = await this.ordersService.findAll(isAdmin ? undefined : userId);
-    return orders.map((order) => this.formatOrder(order));
+    return orders.map((order) => this.formatOrder(order, isAdmin));
   }
 
   @Get(':id')
@@ -51,14 +51,14 @@ export class OrdersController {
     const userId = req.user?.id;
     const isAdmin = req.user?.role === 'admin' || req.user?.role === 'manager';
     const order = await this.ordersService.findOne(id, isAdmin ? undefined : userId);
-    return this.formatOrder(order);
+    return this.formatOrder(order, isAdmin);
   }
 
   @Patch(':id/status')
   @UseGuards(JwtAuthGuard, AdminGuard)
   async updateStatus(@Param('id') id: string, @Body() updateOrderStatusDto: UpdateOrderStatusDto) {
     const order = await this.ordersService.updateStatus(id, updateOrderStatusDto);
-    return this.formatOrder(order);
+    return this.formatOrder(order, true);
   }
 
   @Patch(':id/payment-status')
@@ -68,12 +68,16 @@ export class OrdersController {
     @Body() updatePaymentStatusDto: UpdatePaymentStatusDto,
   ) {
     const order = await this.ordersService.updatePaymentStatus(id, updatePaymentStatusDto);
-    return this.formatOrder(order);
+    return this.formatOrder(order, true);
   }
 
-  private formatOrder(order: any) {
+  // Affiliate commission is internal — only admins see it; customers still
+  // see their discount and the code applied.
+  private formatOrder(order: any, isAdmin: boolean) {
+    const { commission, affiliateId, ...rest } = order;
     return {
-      ...order,
+      ...rest,
+      ...(isAdmin ? { commission, affiliateId } : {}),
       shippingAddress: JSON.parse(order.shippingAddress),
       items: order.items.map((item: any) => ({
         ...item,

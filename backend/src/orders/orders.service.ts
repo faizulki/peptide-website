@@ -20,6 +20,7 @@ import type {
 import { ProductsService } from '../products/products.service';
 import { PayGateService } from '../payment/paygate.service';
 import { CurrencyService } from '../currency/currency.service';
+import { AffiliatesService, round2 } from '../affiliates/affiliates.service';
 
 @Injectable()
 export class OrdersService {
@@ -36,6 +37,7 @@ export class OrdersService {
     private paymentGateway: PaymentGateway,
     private productsService: ProductsService,
     private currencyService: CurrencyService,
+    private affiliatesService: AffiliatesService,
   ) {}
 
   async createOrder(
@@ -92,9 +94,20 @@ export class OrdersService {
       orderItems.push(orderItem);
     }
 
+    // Affiliate attribution: the discount comes off the product subtotal, and
+    // commission is earned on what the customer pays for products (after
+    // the discount, excluding shipping).
+    const affiliate = await this.affiliatesService.findActiveByCode(checkoutDto.affiliateCode);
+    const discount = affiliate
+      ? round2((subtotal * Number(affiliate.discountPercent)) / 100)
+      : 0;
+    const commission = affiliate
+      ? round2(((subtotal - discount) * Number(affiliate.commissionPercent)) / 100)
+      : 0;
+
     // Flat €10 shipping, waived only when every item in the cart is flagged free-shipping.
     const shipping = allFreeShipping ? 0 : 10;
-    const total = subtotal + shipping;
+    const total = round2(subtotal - discount + shipping);
 
     // Generate order number
     const orderNumber = `ORD-${Date.now().toString().padStart(10, '0')}`;
@@ -111,7 +124,11 @@ export class OrdersService {
       items: orderItems,
       subtotal,
       shipping,
+      discount,
       total,
+      affiliateId: affiliate?.id,
+      affiliateCode: affiliate?.code,
+      commission,
       status: OrderStatus.CREATED,
       paymentStatus: PaymentStatus.PENDING,
       paymentMethod: 'PAYGATE',

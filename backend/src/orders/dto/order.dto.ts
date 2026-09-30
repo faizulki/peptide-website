@@ -1,4 +1,4 @@
-import { IsString, IsEmail, IsObject, ValidateNested, IsOptional } from 'class-validator';
+import { IsString, IsEmail, IsObject, ValidateNested, IsOptional, MaxLength } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class ShippingAddressDto {
@@ -52,6 +52,13 @@ export class CheckoutDto {
   @IsString()
   @IsOptional()
   currency?: string;
+
+  // Affiliate code from a ?ref= link or typed at checkout. Unknown or
+  // inactive codes are ignored rather than rejected.
+  @IsString()
+  @IsOptional()
+  @MaxLength(64)
+  affiliateCode?: string;
 }
 
 export class UpdateOrderStatusDto {

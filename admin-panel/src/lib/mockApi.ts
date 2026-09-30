@@ -197,6 +197,7 @@ const generateMockOrders = (): Order[] => {
       items,
       subtotal,
       shipping,
+      discount: 0,
       total,
       status,
       paymentStatus,

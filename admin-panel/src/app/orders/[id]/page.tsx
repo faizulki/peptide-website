@@ -80,6 +80,16 @@ export default function OrderDetailPage() {
                 <span className="text-gray-600 dark:text-gray-400">Subtotal</span>
                 <span className="text-gray-900 dark:text-white">{formatPrice(order.subtotal)}</span>
               </div>
+              {Number(order.discount) > 0 && (
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Discount{order.affiliateCode ? ` (${order.affiliateCode})` : ''}
+                  </span>
+                  <span className="text-green-700 dark:text-green-400">
+                    −{formatPrice(Number(order.discount))}
+                  </span>
+                </div>
+              )}
               <div className="flex justify-between items-center">
                 <span className="text-gray-600 dark:text-gray-400">Shipping</span>
                 <span className="text-gray-900 dark:text-white">{formatPrice(order.shipping)}</span>
@@ -90,6 +100,17 @@ export default function OrderDetailPage() {
                   {formatPrice(order.total)}
                 </span>
               </div>
+              {order.affiliateCode && (
+                <div className="flex justify-between items-center text-sm">
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Affiliate: {order.affiliateCode}
+                  </span>
+                  <span className="text-gray-600 dark:text-gray-400">
+                    Commission {formatPrice(Number(order.commission ?? 0))}
+                    {order.paymentStatus === 'paid' ? '' : ' (counts once paid)'}
+                  </span>
+                </div>
+              )}
             </div>
           </Card>
 

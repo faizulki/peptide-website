@@ -9,6 +9,7 @@ import { Product } from '../entities/product.entity';
 import { PaymentModule } from '../payment/payment.module';
 import { ProductsModule } from '../products/products.module';
 import { CurrencyModule } from '../currency/currency.module';
+import { AffiliatesModule } from '../affiliates/affiliates.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { CurrencyModule } from '../currency/currency.module';
     PaymentModule,
     ProductsModule,
     CurrencyModule,
+    AffiliatesModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService],

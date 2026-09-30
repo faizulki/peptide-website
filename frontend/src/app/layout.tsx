@@ -7,6 +7,7 @@ import { CurrencyProvider } from "@/contexts/CurrencyContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import AffiliateTracker from "@/components/AffiliateTracker";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -37,6 +38,7 @@ export default function RootLayout({
         <AuthProvider>
           <CurrencyProvider>
           <CartProvider>
+            <AffiliateTracker />
             <Header />
             <main className="min-h-screen bg-gray-50">
               {children}

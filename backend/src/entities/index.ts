@@ -8,4 +8,6 @@ export * from './review.entity';
 export * from './activity-log.entity';
 export * from './faq.entity';
 export * from './article.entity';
+export * from './affiliate.entity';
+export * from './affiliate-payout.entity';
 

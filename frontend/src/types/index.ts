@@ -64,6 +64,13 @@ export interface CheckoutData {
   country: string;
   paymentType: 'card' | 'crypto';
   currency: string;
+  affiliateCode?: string;
+}
+
+// What the storefront may know about an affiliate code — never commission.
+export interface AffiliateCodeInfo {
+  code: string;
+  discountPercent: number;
 }
 
 export interface AuthResponse {

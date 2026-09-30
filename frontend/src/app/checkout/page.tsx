@@ -5,8 +5,14 @@ import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { CURRENCY_OPTIONS, DISPLAY_CURRENCY } from '@/contexts/CurrencyContext';
-import { CheckoutData, CryptoCoinOption } from '@/types';
+import { CheckoutData, CryptoCoinOption, AffiliateCodeInfo } from '@/types';
 import { api } from '@/lib/api';
+import {
+  getStoredAffiliateCode,
+  storeAffiliateCode,
+  clearStoredAffiliateCode,
+  normalizeAffiliateCode,
+} from '@/lib/affiliate';
 import Container from '@/components/layout/Container';
 import Input from '@/components/ui/Input';
 import Select from '@/components/ui/Select';
@@ -95,6 +101,47 @@ export default function CheckoutPage() {
     { orderId: string; coins: CryptoCoinOption[] } | null
   >(null);
 
+  // Affiliate code: pre-applied from a ?ref= link remembered by
+  // AffiliateTracker, or typed in by the customer.
+  const [appliedCode, setAppliedCode] = useState<AffiliateCodeInfo | null>(null);
+  const [codeInput, setCodeInput] = useState('');
+  const [codeError, setCodeError] = useState('');
+  const [codeChecking, setCodeChecking] = useState(false);
+
+  useEffect(() => {
+    const stored = getStoredAffiliateCode();
+    if (!stored) return;
+    api
+      .lookupAffiliateCode(stored)
+      .then(setAppliedCode)
+      // Deactivated since the visit — drop it quietly.
+      .catch(() => clearStoredAffiliateCode());
+  }, []);
+
+  const handleApplyCode = async () => {
+    const code = normalizeAffiliateCode(codeInput);
+    if (!code) return;
+    setCodeError('');
+    setCodeChecking(true);
+    try {
+      const info = await api.lookupAffiliateCode(code);
+      setAppliedCode(info);
+      // A typed code is the customer's most recent choice, so it replaces
+      // any code remembered from an earlier link.
+      storeAffiliateCode(info.code);
+      setCodeInput('');
+    } catch {
+      setCodeError(t('checkout.invalidCode'));
+    } finally {
+      setCodeChecking(false);
+    }
+  };
+
+  const handleRemoveCode = () => {
+    setAppliedCode(null);
+    clearStoredAffiliateCode();
+  };
+
   useEffect(() => {
     if (user?.email) {
       setFormData(prev => ({ ...prev, email: user.email }));
@@ -123,7 +170,10 @@ export default function CheckoutPage() {
         throw new Error(t('checkout.missingCartSession'));
       }
 
-      const response = await api.checkout(formData, guestId);
+      const response = await api.checkout(
+        { ...formData, affiliateCode: appliedCode?.code },
+        guestId,
+      );
       clearDraft();
       // Deliberately not clearing the cart here — PayGate has no browser
       // return URL, so if the customer abandons or the payment fails,
@@ -372,6 +422,51 @@ export default function CheckoutPage() {
               </div>
             </div>
 
+            <div>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('checkout.discountCode')}</h2>
+              {appliedCode ? (
+                <div className="flex items-center justify-between gap-4 rounded-lg border border-green-300 bg-green-50 p-3">
+                  <span className="text-sm text-green-800">
+                    {t('checkout.codeApplied')} <span className="font-semibold">{appliedCode.code}</span>
+                    {appliedCode.discountPercent > 0 && ` (−${appliedCode.discountPercent}%)`}
+                  </span>
+                  <Button type="button" variant="outline" size="sm" onClick={handleRemoveCode}>
+                    {t('checkout.removeCode')}
+                  </Button>
+                </div>
+              ) : (
+                <div className="flex items-start gap-2 max-w-md">
+                  <Input
+                    name="discountCode"
+                    aria-label={t('checkout.discountCode')}
+                    placeholder={t('checkout.discountCodePlaceholder')}
+                    value={codeInput}
+                    error={codeError}
+                    autoCapitalize="characters"
+                    onChange={(e) => {
+                      setCodeInput(e.target.value);
+                      setCodeError('');
+                    }}
+                    onKeyDown={(e) => {
+                      // Enter here applies the code instead of submitting the order.
+                      if (e.key === 'Enter') {
+                        e.preventDefault();
+                        handleApplyCode();
+                      }
+                    }}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={handleApplyCode}
+                    disabled={codeChecking || !codeInput.trim()}
+                  >
+                    {t('checkout.applyCode')}
+                  </Button>
+                </div>
+              )}
+            </div>
+
             <Button
               type="submit"
               disabled={loading}
@@ -384,7 +479,12 @@ export default function CheckoutPage() {
         </div>
 
         <div className="lg:col-span-1">
-          <OrderSummary showCheckoutButton={false} />
+          <OrderSummary
+            showCheckoutButton={false}
+            discount={
+              appliedCode ? { code: appliedCode.code, percent: appliedCode.discountPercent } : null
+            }
+          />
         </div>
       </div>
     </Container>

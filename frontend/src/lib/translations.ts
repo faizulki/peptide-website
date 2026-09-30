@@ -74,6 +74,7 @@ const en = {
 
   'orderSummary.title': 'Order Summary',
   'orderSummary.subtotal': 'Subtotal',
+  'orderSummary.discount': 'Discount',
   'orderSummary.shipping': 'Shipping',
   'orderSummary.shippingCalculated': 'Calculated at checkout',
   'orderSummary.total': 'Total',
@@ -106,6 +107,12 @@ const en = {
   'checkout.choosePaymentProviderDesc': "Select how you'd like to pay. You'll be taken straight to that provider.",
   'checkout.failedGeneric': 'Failed to process checkout',
   'checkout.missingCartSession': 'Missing cart session, please refresh and try again',
+  'checkout.discountCode': 'Discount or referral code',
+  'checkout.discountCodePlaceholder': 'Enter code',
+  'checkout.applyCode': 'Apply',
+  'checkout.removeCode': 'Remove',
+  'checkout.codeApplied': 'Code applied:',
+  'checkout.invalidCode': 'This code is not valid.',
 
   'checkoutSuccess.title': 'Order Placed Successfully!',
   'checkoutSuccess.message':
@@ -225,6 +232,7 @@ const sv: Record<TranslationKey, string> = {
 
   'orderSummary.title': 'Ordersammanfattning',
   'orderSummary.subtotal': 'Delsumma',
+  'orderSummary.discount': 'Rabatt',
   'orderSummary.shipping': 'Frakt',
   'orderSummary.shippingCalculated': 'Beräknas i kassan',
   'orderSummary.total': 'Totalt',
@@ -257,6 +265,12 @@ const sv: Record<TranslationKey, string> = {
   'checkout.choosePaymentProviderDesc': 'Välj hur du vill betala. Du tas direkt till den leverantören.',
   'checkout.failedGeneric': 'Det gick inte att genomföra köpet',
   'checkout.missingCartSession': 'Varukorgssessionen saknas, ladda om sidan och försök igen',
+  'checkout.discountCode': 'Rabatt- eller referenskod',
+  'checkout.discountCodePlaceholder': 'Ange kod',
+  'checkout.applyCode': 'Använd',
+  'checkout.removeCode': 'Ta bort',
+  'checkout.codeApplied': 'Kod tillagd:',
+  'checkout.invalidCode': 'Koden är inte giltig.',
 
   'checkoutSuccess.title': 'Beställningen genomfördes!',
   'checkoutSuccess.message':

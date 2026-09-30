@@ -1,4 +1,13 @@
-import { Product, Review, Cart, CheckoutData, CryptoCoinOption, Faq, Article } from '@/types';
+import {
+  Product,
+  Review,
+  Cart,
+  CheckoutData,
+  CryptoCoinOption,
+  Faq,
+  Article,
+  AffiliateCodeInfo,
+} from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -89,6 +98,7 @@ export const api = {
         },
         paymentType: checkoutData.paymentType,
         currency: checkoutData.currency,
+        affiliateCode: checkoutData.affiliateCode || undefined,
         guestId,
       }),
     }),
@@ -106,6 +116,13 @@ export const api = {
   // against PayGate before reporting paid, so it's safe to poll directly.
   checkPaymentStatus: (orderId: string): Promise<{ received: boolean; processed?: boolean }> =>
     request(`/webhooks/paygate?orderId=${encodeURIComponent(orderId)}`),
+
+  // Affiliates
+  lookupAffiliateCode: (code: string): Promise<AffiliateCodeInfo> =>
+    request(`/affiliates/lookup/${encodeURIComponent(code)}`),
+
+  trackAffiliateClick: (code: string): Promise<AffiliateCodeInfo> =>
+    request(`/affiliates/lookup/${encodeURIComponent(code)}/click`, { method: 'POST' }),
 
   // FAQs
   getFaqs: (): Promise<Faq[]> => request('/faqs'),

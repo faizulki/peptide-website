@@ -62,8 +62,24 @@ export class Order {
   @Column('decimal', { precision: 10, scale: 2 })
   shipping: number;
 
+  // Affiliate discount, taken off the subtotal: total = subtotal - discount + shipping.
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  discount: number;
+
   @Column('decimal', { precision: 10, scale: 2 })
   total: number;
+
+  // Affiliate attribution. The code and commission are snapshotted when the
+  // order is placed, so later edits to the affiliate don't rewrite history.
+  // Commission only counts toward earnings once the order is paid.
+  @Column({ nullable: true })
+  affiliateId: string;
+
+  @Column({ nullable: true })
+  affiliateCode: string;
+
+  @Column('decimal', { precision: 10, scale: 2, default: 0 })
+  commission: number;
 
   @Column({ type: 'varchar', default: OrderStatus.CREATED })
   status: OrderStatus;
