@@ -1,0 +1,129 @@
+name: Deploy to production
+
+# Deploys by syncing the repo to the server and rebuilding the Docker Compose
+# stack there — the same way it has been deployed by hand over SSH. The
+# workflow never picks a location or project name itself: it reads them off
+# the running containers, so the existing volumes (SQLite DB, uploads), .env
+# and any compose override files on the server keep being used as-is.
+
+on:
+  push:
+    branches: [main]
+    # A change to only the workflow itself shouldn't redeploy the site.
+    paths-ignore:
+      - '.github/**'
+      - '**/*.md'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Only show what would change on the server; deploy nothing'
+        type: boolean
+        default: false
+
+# Never run two deploys against the server at once, and never cancel one
+# midway through a build.
+concurrency:
+  group: production-deploy
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 45
+    env:
+      SSH_HOST: ${{ secrets.SSH_HOST }}
+      SSH_USER: ${{ secrets.SSH_USER }}
+      SSH_PORT: ${{ secrets.SSH_PORT || '22' }}
+      DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure SSH
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_KNOWN_HOSTS: ${{ secrets.SSH_KNOWN_HOSTS }}
+        run: |
+          for name in SSH_HOST SSH_USER SSH_PRIVATE_KEY SSH_KNOWN_HOSTS; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Missing required secret $name"
+              exit 1
+            fi
+          done
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$SSH_PRIVATE_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          cat > ~/.ssh/config <<EOF
+          Host prod
+            HostName $SSH_HOST
+            User $SSH_USER
+            Port $SSH_PORT
+            IdentityFile ~/.ssh/deploy_key
+            IdentitiesOnly yes
+            StrictHostKeyChecking yes
+            ServerAliveInterval 30
+          EOF
+
+      - name: Locate the running deployment
+        id: locate
+        env:
+          DEPLOY_PATH: ${{ secrets.DEPLOY_PATH }}
+        run: ssh prod "bash -s -- '$DEPLOY_PATH'" < .github/scripts/locate.sh >> "$GITHUB_OUTPUT"
+
+      - name: Show config drift (docker-compose.yml, Caddyfile)
+        env:
+          PROJECT_DIR: ${{ steps.locate.outputs.project_dir }}
+        run: |
+          for f in docker-compose.yml Caddyfile; do
+            echo "::group::diff server:$f -> repo:$f"
+            ssh prod "cat '$PROJECT_DIR/$f' 2>/dev/null" | diff -u --label "server/$f" --label "repo/$f" - "$f" || true
+            echo "::endgroup::"
+          done
+
+      - name: Back up current deployment files
+        if: env.DRY_RUN != 'true'
+        env:
+          PROJECT_DIR: ${{ steps.locate.outputs.project_dir }}
+        run: ssh prod "bash -s -- '$PROJECT_DIR'" < .github/scripts/backup.sh
+
+      - name: Sync code to server
+        env:
+          PROJECT_DIR: ${{ steps.locate.outputs.project_dir }}
+        run: |
+          # Server-only files (.env, database, uploads, build output, deps) are
+          # excluded, so rsync neither overwrites nor deletes them.
+          common=(
+            -rlptz --checksum --itemize-changes
+            --no-owner --no-group
+            --exclude=.git/ --exclude=.github/
+            --exclude=node_modules/ --exclude=.next/ --exclude=dist/
+            --exclude=/backend/data/ --exclude='*.sqlite'
+            --include=.env.example --exclude=.env --exclude='.env.*'
+            --exclude=.deployed-revision
+          )
+          [ "$DRY_RUN" = "true" ] && common+=(--dry-run)
+
+          # Pass 1: whole tree, additive only — anything else living in the
+          # project directory on the server is left alone.
+          rsync "${common[@]}" ./ "prod:$PROJECT_DIR/"
+
+          # Pass 2: mirror source directories exactly, so files deleted from
+          # the repo (e.g. a removed Next.js page) don't linger and get built.
+          for dir in backend/src frontend/src frontend/public admin-panel/src admin-panel/public; do
+            [ -d "$dir" ] && rsync "${common[@]}" --delete "$dir/" "prod:$PROJECT_DIR/$dir/"
+          done
+
+      - name: Build and restart containers
+        if: env.DRY_RUN != 'true'
+        env:
+          PROJECT_DIR: ${{ steps.locate.outputs.project_dir }}
+          PROJECT_NAME: ${{ steps.locate.outputs.project_name }}
+          COMPOSE_FILES: ${{ steps.locate.outputs.compose_files }}
+          ENV_FILE: ${{ steps.locate.outputs.env_file }}
+        run: |
+          ssh prod "bash -s -- '$PROJECT_DIR' '$PROJECT_NAME' '$COMPOSE_FILES' '$ENV_FILE' '$GITHUB_SHA'" \
+            < .github/scripts/deploy.sh
