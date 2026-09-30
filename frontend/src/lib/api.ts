@@ -1,4 +1,4 @@
-import { Product, Review, Cart, CheckoutData, CryptoCoinOption, Faq } from '@/types';
+import { Product, Review, Cart, CheckoutData, CryptoCoinOption, Faq, Article } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
@@ -109,4 +109,9 @@ export const api = {
 
   // FAQs
   getFaqs: (): Promise<Faq[]> => request('/faqs'),
+
+  // Blog
+  getArticles: (): Promise<Article[]> => request('/articles'),
+
+  getArticle: (slug: string): Promise<Article> => request(`/articles/${encodeURIComponent(slug)}`),
 };

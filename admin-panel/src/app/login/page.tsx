@@ -31,6 +31,12 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 px-4">
       <div className="max-w-md w-full space-y-8 bg-white dark:bg-gray-800 p-8 rounded-lg shadow-lg">
         <div>
+          <div className="flex justify-center">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icon.png" alt="" className="h-16 w-16 dark:hidden" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/logo-icon-white.png" alt="" className="h-16 w-16 hidden dark:block" />
+          </div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-white">
             Admin Panel Login
           </h2>

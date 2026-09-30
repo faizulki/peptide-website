@@ -1,24 +1,20 @@
-const credibilityPoints = [
-  {
-    title: 'Featured in Research Publications',
-    description: 'Compounds referenced in peer-reviewed literature and independent research writeups.',
-  },
-  {
-    title: 'Used by Academic Institutions',
-    description: 'Trusted by university and private laboratories for controlled research settings.',
-  },
-  {
-    title: 'Verified by Independent Labs',
-    description: 'Every batch is verified by third-party laboratories, not just our own internal testing.',
-  },
-];
+'use client';
+
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function ResearchCredibility() {
+  const { t } = useLanguage();
+  const credibilityPoints = [
+    { title: t('credibility.point1Title'), description: t('credibility.point1Desc') },
+    { title: t('credibility.point2Title'), description: t('credibility.point2Desc') },
+    { title: t('credibility.point3Title'), description: t('credibility.point3Desc') },
+  ];
+
   return (
     <div className="bg-white rounded-lg shadow-md p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">Trusted for Research</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2 text-center">{t('credibility.title')}</h2>
       <p className="text-gray-600 text-center mb-8 max-w-2xl mx-auto">
-        We hold our catalog to the standards research institutions expect.
+        {t('credibility.subtitle')}
       </p>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {credibilityPoints.map((point) => (

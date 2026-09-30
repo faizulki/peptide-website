@@ -2,6 +2,7 @@
 
 import { Product } from '@/types';
 import { useCart } from '@/contexts/CartContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { useState } from 'react';
 import ProductImage from './product/ProductImage';
 import ProductInfo from './product/ProductInfo';
@@ -14,6 +15,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const { t } = useLanguage();
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
 
@@ -35,7 +37,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       <div className="p-4">
         <ProductInfo product={product} />
         <div className="flex items-center space-x-2 mb-3">
-          <span className="text-gray-700 text-sm font-medium">Quantity:</span>
+          <span className="text-gray-700 text-sm font-medium">{t('product.quantity')}</span>
           <QuantitySelector
             value={quantity}
             onChange={setQuantity}
@@ -48,7 +50,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           disabled={!product.inStock || isAdding}
           fullWidth
         >
-          {isAdding ? 'Adding...' : 'Buy Now'}
+          {isAdding ? t('product.adding') : t('product.buyNow')}
         </Button>
       </div>
     </div>

@@ -1,15 +1,20 @@
-const badges = [
-  'Third-Party Tested Compounds',
-  'Verified Purity Standards',
-  'COA-Backed Quality',
-  'Discreet Secure Handling',
-  'Research-Grade Products',
-];
+'use client';
+
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function TrustBadges() {
+  const { t } = useLanguage();
+  const badges = [
+    t('trustBadges.badge1'),
+    t('trustBadges.badge2'),
+    t('trustBadges.badge3'),
+    t('trustBadges.badge4'),
+    t('trustBadges.badge5'),
+  ];
+
   return (
     <div className="bg-white rounded-lg shadow-md p-8">
-      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">Why Choose Us</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('trustBadges.title')}</h2>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
         {badges.map((badge) => (
           <div
@@ -32,9 +37,7 @@ export default function TrustBadges() {
         ))}
       </div>
       <p className="text-gray-600 leading-relaxed text-center max-w-3xl mx-auto">
-        Every compound in our catalog undergoes rigorous third-party testing to verify
-        identity, purity, and concentration. We provide Certificates of Analysis with
-        every product, so researchers can trust what they&apos;re working with.
+        {t('trustBadges.description')}
       </p>
     </div>
   );

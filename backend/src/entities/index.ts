@@ -7,4 +7,5 @@ export * from './order-item.entity';
 export * from './review.entity';
 export * from './activity-log.entity';
 export * from './faq.entity';
+export * from './article.entity';
 

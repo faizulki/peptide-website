@@ -1,44 +1,58 @@
+'use client';
+
 import { Product } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProductSpecificationsProps {
   product: Product;
 }
 
 export default function ProductSpecifications({ product }: ProductSpecificationsProps) {
-  if (!product.extendedInfo) return null;
+  const { language, t } = useLanguage();
+  const info =
+    (language === 'sv' && product.extendedInfoSv && (
+      product.extendedInfoSv.specifications.length > 0 ||
+      product.extendedInfoSv.usage ||
+      product.extendedInfoSv.storage ||
+      product.extendedInfoSv.warnings.length > 0
+    )
+      ? product.extendedInfoSv
+      : product.extendedInfo);
+
+  if (!info) return null;
 
   return (
     <div className="space-y-4">
-      {product.extendedInfo.specifications.length > 0 && (
+      {info.specifications.length > 0 && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Specifications:</h3>
+          <h3 className="font-semibold text-gray-900 mb-2">{t('product.specifications')}</h3>
           <ul className="list-disc list-inside text-gray-700 space-y-1">
-            {product.extendedInfo.specifications.map((spec, idx) => (
+            {info.specifications.map((spec, idx) => (
               <li key={idx}>{spec}</li>
             ))}
           </ul>
         </div>
       )}
-      
-      {product.extendedInfo.usage && (
+
+      {info.usage && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Usage:</h3>
-          <p className="text-gray-700">{product.extendedInfo.usage}</p>
+          <h3 className="font-semibold text-gray-900 mb-2">{t('product.usage')}</h3>
+          <p className="text-gray-700">{info.usage}</p>
         </div>
       )}
-      
-      {product.extendedInfo.storage && (
+
+      {info.storage && (
         <div>
-          <h3 className="font-semibold text-gray-900 mb-2">Storage:</h3>
-          <p className="text-gray-700">{product.extendedInfo.storage}</p>
+          <h3 className="font-semibold text-gray-900 mb-2">{t('product.storage')}</h3>
+          <p className="text-gray-700">{info.storage}</p>
         </div>
       )}
-      
-      {product.extendedInfo.warnings && product.extendedInfo.warnings.length > 0 && (
+
+      {info.warnings && info.warnings.length > 0 && (
         <div>
-          <h3 className="font-semibold text-red-600 mb-2">Warnings:</h3>
+          <h3 className="font-semibold text-red-600 mb-2">{t('product.warnings')}</h3>
           <ul className="list-disc list-inside text-red-600 space-y-1">
-            {product.extendedInfo.warnings.map((warning, idx) => (
+            {info.warnings.map((warning, idx) => (
               <li key={idx}>{warning}</li>
             ))}
           </ul>
@@ -47,4 +61,3 @@ export default function ProductSpecifications({ product }: ProductSpecifications
     </div>
   );
 }
-

@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Container from '@/components/layout/Container';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -12,6 +13,7 @@ import ErrorMessage from '@/components/ui/ErrorMessage';
 export default function SignInPage() {
   const router = useRouter();
   const { signIn } = useAuth();
+  const { t } = useLanguage();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -35,8 +37,8 @@ export default function SignInPage() {
   return (
     <Container maxWidth="md" className="py-12">
       <div className="bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Sign In</h1>
-        
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('auth.signIn')}</h1>
+
         {error && (
           <div className="mb-4">
             <ErrorMessage message={error} onDismiss={() => setError('')} />
@@ -45,7 +47,7 @@ export default function SignInPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Email"
+            label={t('auth.email')}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -53,7 +55,7 @@ export default function SignInPage() {
           />
 
           <Input
-            label="Password"
+            label={t('auth.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
@@ -61,14 +63,14 @@ export default function SignInPage() {
           />
 
           <Button type="submit" disabled={loading} fullWidth>
-            {loading ? 'Signing In...' : 'Sign In'}
+            {loading ? t('auth.signingIn') : t('auth.signIn')}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Don't have an account?{' '}
+          {t('auth.dontHaveAccount')}{' '}
           <Link href="/signup" className="text-blue-600 hover:underline">
-            Sign up
+            {t('auth.signUp')}
           </Link>
         </p>
       </div>

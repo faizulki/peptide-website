@@ -7,6 +7,7 @@ import {
   DashboardMetrics,
   AuthResponse,
   Faq,
+  Article,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -63,13 +64,19 @@ function toAdminUser(u: BackendAuthUser): AdminUser {
 // Product create/update forms nest specs under extendedInfo; the backend
 // DTOs take them flat.
 function toProductPayload(data: Partial<Product>) {
-  const { extendedInfo, ...rest } = data;
+  const { extendedInfo, extendedInfoSv, ...rest } = data;
   const payload: Record<string, unknown> = { ...rest };
   if (extendedInfo) {
     payload.specifications = extendedInfo.specifications;
     payload.usage = extendedInfo.usage;
     payload.storage = extendedInfo.storage;
     payload.warnings = extendedInfo.warnings;
+  }
+  if (extendedInfoSv) {
+    payload.specificationsSv = extendedInfoSv.specifications;
+    payload.usageSv = extendedInfoSv.usage;
+    payload.storageSv = extendedInfoSv.storage;
+    payload.warningsSv = extendedInfoSv.warnings;
   }
   return payload;
 }
@@ -210,4 +217,26 @@ export const adminApi = {
     }),
 
   deleteFaq: (id: string): Promise<void> => request(`/faqs/${id}`, { method: 'DELETE' }),
+
+  // Articles / blog
+  getArticles: (): Promise<Article[]> => request('/articles/admin/all'),
+
+  createArticle: (data: Omit<Article, 'id' | 'slug' | 'source' | 'createdAt' | 'updatedAt'> & { slug?: string }): Promise<Article> =>
+    request('/articles', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateArticle: (id: string, updates: Partial<Article>): Promise<Article> =>
+    request(`/articles/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(updates),
+    }),
+
+  deleteArticle: (id: string): Promise<void> => request(`/articles/${id}`, { method: 'DELETE' }),
+
+  // Soro SEO webhook config — shown to the client so they can paste it into
+  // their Soro dashboard once they have an account.
+  getSoroIntegrationConfig: (): Promise<{ webhookUrl: string; secret: string }> =>
+    request('/admin/integrations/soro'),
 };

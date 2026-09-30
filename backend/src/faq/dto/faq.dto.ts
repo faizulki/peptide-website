@@ -7,6 +7,14 @@ export class CreateFaqDto {
   @IsString()
   answer: string;
 
+  @IsString()
+  @IsOptional()
+  questionSv?: string;
+
+  @IsString()
+  @IsOptional()
+  answerSv?: string;
+
   @IsNumber()
   @IsOptional()
   order?: number;
@@ -24,6 +32,14 @@ export class UpdateFaqDto {
   @IsString()
   @IsOptional()
   answer?: string;
+
+  @IsString()
+  @IsOptional()
+  questionSv?: string;
+
+  @IsString()
+  @IsOptional()
+  answerSv?: string;
 
   @IsNumber()
   @IsOptional()

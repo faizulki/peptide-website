@@ -30,6 +30,8 @@ export class FaqService {
     const faq = this.faqRepository.create({
       question: dto.question,
       answer: dto.answer,
+      questionSv: dto.questionSv,
+      answerSv: dto.answerSv,
       order: dto.order ?? 0,
       isActive: dto.isActive ?? true,
     });

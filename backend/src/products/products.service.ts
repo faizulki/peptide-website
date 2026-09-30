@@ -40,6 +40,12 @@ export class ProductsService {
         ? JSON.stringify(createProductDto.specifications)
         : null,
       warnings: createProductDto.warnings ? JSON.stringify(createProductDto.warnings) : null,
+      specificationsSv: createProductDto.specificationsSv
+        ? JSON.stringify(createProductDto.specificationsSv)
+        : null,
+      warningsSv: createProductDto.warningsSv
+        ? JSON.stringify(createProductDto.warningsSv)
+        : null,
     });
     return this.productsRepository.save(product);
   }
@@ -53,6 +59,12 @@ export class ProductsService {
     }
     if (updateProductDto.warnings) {
       updateData.warnings = JSON.stringify(updateProductDto.warnings);
+    }
+    if (updateProductDto.specificationsSv) {
+      updateData.specificationsSv = JSON.stringify(updateProductDto.specificationsSv);
+    }
+    if (updateProductDto.warningsSv) {
+      updateData.warningsSv = JSON.stringify(updateProductDto.warningsSv);
     }
 
     // updateProductDto's untouched optional fields are still own properties

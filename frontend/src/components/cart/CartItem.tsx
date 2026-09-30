@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { CartItem as CartItemType } from '@/types';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ProductImage from '@/components/product/ProductImage';
 import ProductInfo from '@/components/product/ProductInfo';
 import QuantitySelector from '@/components/ui/QuantitySelector';
@@ -16,6 +17,7 @@ interface CartItemProps {
 export default function CartItem({ item }: CartItemProps) {
   const { updateQuantity, removeFromCart } = useCart();
   const { formatPrice } = useCurrency();
+  const { t } = useLanguage();
 
   if (!item.product) return null;
 
@@ -52,7 +54,7 @@ export default function CartItem({ item }: CartItemProps) {
             onClick={handleRemove}
             className="!px-2 !py-1 text-xs"
           >
-            Remove
+            {t('cart.remove')}
           </Button>
         </div>
       </div>

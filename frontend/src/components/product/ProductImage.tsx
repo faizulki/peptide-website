@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { Product } from '@/types';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface ProductImageProps {
   product: Product;
@@ -21,13 +24,14 @@ export default function ProductImage({
   showLink = true,
   className = '',
 }: ProductImageProps) {
+  const { pick, t } = useLanguage();
   const imageContent = (
     <div className={`${sizeStyles[size]} bg-gray-100 rounded-lg flex items-center justify-center relative overflow-hidden ${className}`}>
       {product.image && !product.image.includes('/api/placeholder') ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={product.image}
-          alt={product.name}
+          alt={pick(product.name, product.nameSv)}
           className="h-full w-full object-cover"
         />
       ) : (
@@ -41,7 +45,7 @@ export default function ProductImage({
       )}
       {!product.inStock && (
         <div className="absolute top-2 right-2 bg-red-500 text-white px-2 py-1 rounded text-sm">
-          Out of Stock
+          {t('product.outOfStock')}
         </div>
       )}
     </div>

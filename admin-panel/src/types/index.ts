@@ -4,6 +4,9 @@ export interface Product {
   name: string;
   description: string;
   shortDescription: string;
+  nameSv?: string | null;
+  descriptionSv?: string | null;
+  shortDescriptionSv?: string | null;
   price: number;
   image: string;
   category: string;
@@ -12,6 +15,12 @@ export interface Product {
   isActive: boolean;
   isVisible: boolean;
   extendedInfo?: {
+    specifications: string[];
+    usage: string;
+    storage: string;
+    warnings: string[];
+  };
+  extendedInfoSv?: {
     specifications: string[];
     usage: string;
     storage: string;
@@ -110,8 +119,26 @@ export interface Faq {
   id: string;
   question: string;
   answer: string;
+  questionSv?: string | null;
+  answerSv?: string | null;
   order: number;
   isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Article {
+  id: string;
+  title: string;
+  titleSv?: string | null;
+  slug: string;
+  content: string;
+  contentSv?: string | null;
+  metaDescription?: string | null;
+  metaDescriptionSv?: string | null;
+  featuredImage?: string | null;
+  isPublished: boolean;
+  source: string;
   createdAt: string;
   updatedAt: string;
 }

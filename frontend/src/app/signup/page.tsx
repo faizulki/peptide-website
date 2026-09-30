@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Container from '@/components/layout/Container';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -12,6 +13,7 @@ import ErrorMessage from '@/components/ui/ErrorMessage';
 export default function SignUpPage() {
   const router = useRouter();
   const { signUp } = useAuth();
+  const { t } = useLanguage();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -48,8 +50,8 @@ export default function SignUpPage() {
   return (
     <Container maxWidth="md" className="py-12">
       <div className="bg-white rounded-lg shadow-md p-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">Sign Up</h1>
-        
+        <h1 className="text-2xl font-bold text-gray-900 mb-6 text-center">{t('auth.signUp')}</h1>
+
         {error && (
           <div className="mb-4">
             <ErrorMessage message={error} onDismiss={() => setError('')} />
@@ -58,7 +60,7 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <Input
-            label="Full Name"
+            label={t('auth.fullName')}
             type="text"
             value={name}
             onChange={(e) => setName(e.target.value)}
@@ -66,7 +68,7 @@ export default function SignUpPage() {
           />
 
           <Input
-            label="Email"
+            label={t('auth.email')}
             type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -74,17 +76,17 @@ export default function SignUpPage() {
           />
 
           <Input
-            label="Password"
+            label={t('auth.password')}
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
             minLength={6}
-            helperText="Must be at least 6 characters"
+            helperText={t('auth.mustBeAtLeast6')}
           />
 
           <Input
-            label="Confirm Password"
+            label={t('auth.confirmPassword')}
             type="password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
@@ -93,14 +95,14 @@ export default function SignUpPage() {
           />
 
           <Button type="submit" disabled={loading} fullWidth>
-            {loading ? 'Creating Account...' : 'Sign Up'}
+            {loading ? t('auth.creatingAccount') : t('auth.signUp')}
           </Button>
         </form>
 
         <p className="mt-4 text-center text-sm text-gray-600">
-          Already have an account?{' '}
+          {t('auth.alreadyHaveAccount')}{' '}
           <Link href="/signin" className="text-blue-600 hover:underline">
-            Sign in
+            {t('auth.signIn')}
           </Link>
         </p>
       </div>

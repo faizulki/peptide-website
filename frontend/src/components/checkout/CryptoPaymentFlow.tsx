@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
 import { CryptoCoinOption } from '@/types';
 import { api } from '@/lib/api';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import ErrorMessage from '@/components/ui/ErrorMessage';
@@ -23,6 +24,7 @@ function networkLabel(coin: CryptoCoinOption): string {
 
 export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowProps) {
   const router = useRouter();
+  const { t } = useLanguage();
   const [search, setSearch] = useState('');
   const [selectedCoin, setSelectedCoin] = useState<CryptoCoinOption | null>(null);
   const [payment, setPayment] = useState<{ address: string; amountCoin: string } | null>(null);
@@ -101,11 +103,10 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
     return (
       <div className="bg-white rounded-lg shadow-md p-8">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Send {selectedCoin.name} ({selectedCoin.ticker.toUpperCase()})
+          {t('crypto.send')} {selectedCoin.name} ({selectedCoin.ticker.toUpperCase()})
         </h1>
         <p className="text-gray-600 mb-6">
-          Send exactly the amount below to this address on the {networkLabel(selectedCoin)} network.
-          This page updates automatically once payment is detected.
+          {t('crypto.sendDesc').replace('{network}', networkLabel(selectedCoin))}
         </p>
 
         <div className="flex flex-col items-center gap-6 sm:flex-row sm:items-start">
@@ -116,27 +117,27 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
 
           <div className="flex-1 w-full space-y-4">
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-1">Amount</p>
+              <p className="text-sm font-medium text-gray-700 mb-1">{t('crypto.amount')}</p>
               <p className="text-xl font-semibold text-gray-900">
                 {payment.amountCoin} {selectedCoin.ticker.toUpperCase()}
               </p>
             </div>
 
             <div>
-              <p className="text-sm font-medium text-gray-700 mb-1">Address</p>
+              <p className="text-sm font-medium text-gray-700 mb-1">{t('crypto.address')}</p>
               <div className="flex items-center gap-2">
                 <code className="flex-1 break-all bg-gray-100 rounded px-3 py-2 text-sm text-gray-900">
                   {payment.address}
                 </code>
                 <Button type="button" variant="secondary" size="sm" onClick={handleCopy}>
-                  {copied ? 'Copied!' : 'Copy'}
+                  {copied ? t('crypto.copied') : t('crypto.copy')}
                 </Button>
               </div>
             </div>
 
             <div className="flex items-center gap-2 text-sm text-gray-500 pt-2">
               <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-blue-600" />
-              Waiting for payment…
+              {t('crypto.waitingForPayment')}
             </div>
           </div>
         </div>
@@ -146,9 +147,9 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
 
   return (
     <div className="bg-white rounded-lg shadow-md p-8">
-      <h1 className="text-2xl font-bold text-gray-900 mb-2">Pay with Crypto</h1>
+      <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('crypto.payWithCrypto')}</h1>
       <p className="text-gray-600 mb-6">
-        Choose a coin. We&apos;ll generate a one-time deposit address for your order.
+        {t('crypto.chooseCoinDesc')}
       </p>
 
       {error && (
@@ -159,7 +160,7 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
 
       <Input
         type="text"
-        placeholder="Search coins (e.g. Bitcoin, USDC, Polygon)"
+        placeholder={t('crypto.searchPlaceholder')}
         value={search}
         onChange={(e) => setSearch(e.target.value)}
         className="mb-4"
@@ -167,7 +168,7 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
 
       <div className="max-h-96 overflow-y-auto space-y-1 border border-gray-200 rounded-lg">
         {filteredCoins.length === 0 && (
-          <p className="text-sm text-gray-500 p-4">No coins match your search.</p>
+          <p className="text-sm text-gray-500 p-4">{t('crypto.noCoinsMatch')}</p>
         )}
         {filteredCoins.map((coin) => (
           <button

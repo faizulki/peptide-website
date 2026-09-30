@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { CURRENCY_OPTIONS, DISPLAY_CURRENCY } from '@/contexts/CurrencyContext';
 import { CheckoutData, CryptoCoinOption } from '@/types';
 import { api } from '@/lib/api';
@@ -17,16 +18,16 @@ import OrderSummary from '@/components/cart/OrderSummary';
 import CryptoPaymentFlow from '@/components/checkout/CryptoPaymentFlow';
 
 const countryOptions = [
-  { value: 'Sweden', label: 'Sweden' },
-  { value: 'Finland', label: 'Finland' },
-  { value: 'Norway', label: 'Norway' },
-  { value: 'Denmark', label: 'Denmark' },
-  { value: 'Germany', label: 'Germany' },
-  { value: 'United Kingdom', label: 'United Kingdom' },
-  { value: 'France', label: 'France' },
-  { value: 'Spain', label: 'Spain' },
-  { value: 'Portugal', label: 'Portugal' },
-  { value: 'Serbia', label: 'Serbia' },
+  { value: 'Sweden', label: { en: 'Sweden', sv: 'Sverige' } },
+  { value: 'Finland', label: { en: 'Finland', sv: 'Finland' } },
+  { value: 'Norway', label: { en: 'Norway', sv: 'Norge' } },
+  { value: 'Denmark', label: { en: 'Denmark', sv: 'Danmark' } },
+  { value: 'Germany', label: { en: 'Germany', sv: 'Tyskland' } },
+  { value: 'United Kingdom', label: { en: 'United Kingdom', sv: 'Storbritannien' } },
+  { value: 'France', label: { en: 'France', sv: 'Frankrike' } },
+  { value: 'Spain', label: { en: 'Spain', sv: 'Spanien' } },
+  { value: 'Portugal', label: { en: 'Portugal', sv: 'Portugal' } },
+  { value: 'Serbia', label: { en: 'Serbia', sv: 'Serbien' } },
 ];
 
 const DEFAULT_FORM_DATA: CheckoutData = {
@@ -76,6 +77,11 @@ function clearDraft() {
 export default function CheckoutPage() {
   const { cart, loading: cartLoading, getTotalPrice } = useCart();
   const { user } = useAuth();
+  const { t, language } = useLanguage();
+  const localizedCountryOptions = countryOptions.map((c) => ({
+    value: c.value,
+    label: c.label[language],
+  }));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -114,7 +120,7 @@ export default function CheckoutPage() {
     try {
       const guestId = localStorage.getItem('guestId');
       if (!guestId) {
-        throw new Error('Missing cart session, please refresh and try again');
+        throw new Error(t('checkout.missingCartSession'));
       }
 
       const response = await api.checkout(formData, guestId);
@@ -136,7 +142,7 @@ export default function CheckoutPage() {
         window.location.href = response.paymentUrl;
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to process checkout');
+      setError(err.message || t('checkout.failedGeneric'));
       setLoading(false);
     }
   };
@@ -153,9 +159,9 @@ export default function CheckoutPage() {
     return (
       <Container maxWidth="2xl" className="py-12">
         <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Choose a Payment Provider</h1>
+          <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('checkout.choosePaymentProvider')}</h1>
           <p className="text-gray-600 mb-6">
-            Select how you&apos;d like to pay. You&apos;ll be taken straight to that provider.
+            {t('checkout.choosePaymentProviderDesc')}
           </p>
           <div className="space-y-3">
             {providerOptions.map((provider) => (
@@ -185,8 +191,8 @@ export default function CheckoutPage() {
     return (
       <Container className="py-12">
         <EmptyState
-          title="Your Cart is Empty"
-          message="Add items to your cart before checkout."
+          title={t('checkout.empty')}
+          message={t('checkout.emptyMessage')}
         />
       </Container>
     );
@@ -194,7 +200,7 @@ export default function CheckoutPage() {
 
   return (
     <Container maxWidth="4xl" className="py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('checkout.title')}</h1>
       
       {error && (
         <div className="mb-6">
@@ -206,20 +212,20 @@ export default function CheckoutPage() {
         <div className="lg:col-span-2">
           <form onSubmit={handleSubmit} className="bg-white rounded-lg shadow-md p-6 space-y-6">
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Personal Information</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('checkout.personalInformation')}</h2>
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <Input
-                    label="First Name"
+                    label={t('checkout.firstName')}
                     name="firstName"
                     type="text"
                     value={formData.firstName}
                     onChange={handleChange}
                     required
                   />
-                  
+
                   <Input
-                    label="Last Name"
+                    label={t('checkout.lastName')}
                     name="lastName"
                     type="text"
                     value={formData.lastName}
@@ -229,7 +235,7 @@ export default function CheckoutPage() {
                 </div>
 
                 <Input
-                  label="Email"
+                  label={t('checkout.email')}
                   name="email"
                   type="email"
                   value={formData.email}
@@ -238,7 +244,7 @@ export default function CheckoutPage() {
                 />
 
                 <Input
-                  label="Phone"
+                  label={t('checkout.phone')}
                   name="phone"
                   type="tel"
                   value={formData.phone}
@@ -249,10 +255,10 @@ export default function CheckoutPage() {
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Shipping Address</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('checkout.shippingAddress')}</h2>
               <div className="space-y-4">
                 <Input
-                  label="Street Address"
+                  label={t('checkout.streetAddress')}
                   name="address"
                   type="text"
                   value={formData.address}
@@ -262,25 +268,25 @@ export default function CheckoutPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <Input
-                    label="City"
+                    label={t('checkout.city')}
                     name="city"
                     type="text"
                     value={formData.city}
                     onChange={handleChange}
                     required
                   />
-                  
+
                   <Input
-                    label="State"
+                    label={t('checkout.state')}
                     name="state"
                     type="text"
                     value={formData.state}
                     onChange={handleChange}
                     required
                   />
-                  
+
                   <Input
-                    label="ZIP Code"
+                    label={t('checkout.zipCode')}
                     name="zipCode"
                     type="text"
                     value={formData.zipCode}
@@ -290,22 +296,22 @@ export default function CheckoutPage() {
                 </div>
 
                 <Select
-                  label="Country"
+                  label={t('checkout.country')}
                   name="country"
                   value={formData.country}
                   onChange={handleChange}
-                  options={countryOptions}
+                  options={localizedCountryOptions}
                   required
                 />
               </div>
             </div>
 
             <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-4">Payment Method</h2>
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">{t('checkout.paymentMethod')}</h2>
 
               <div className="mb-4 max-w-xs">
                 <Select
-                  label="Currency"
+                  label={t('checkout.currency')}
                   name="currency"
                   value={formData.currency}
                   onChange={handleChange}
@@ -313,7 +319,7 @@ export default function CheckoutPage() {
                   required
                 />
                 <p className="text-xs text-gray-500 mt-1">
-                  Local payment options (e.g. Klarna for SEK) are shown based on your currency.
+                  {t('checkout.localPaymentNote')}
                 </p>
               </div>
 
@@ -334,9 +340,9 @@ export default function CheckoutPage() {
                     className="mt-1"
                   />
                   <span>
-                    <span className="block font-medium text-gray-900">Card / Bank</span>
+                    <span className="block font-medium text-gray-900">{t('checkout.cardBank')}</span>
                     <span className="block text-sm text-gray-500">
-                      Pay by card, Klarna, or other local options — settled to us in crypto behind the scenes.
+                      {t('checkout.cardBankDesc')}
                     </span>
                   </span>
                 </label>
@@ -357,9 +363,9 @@ export default function CheckoutPage() {
                     className="mt-1"
                   />
                   <span>
-                    <span className="block font-medium text-gray-900">Pay with Crypto</span>
+                    <span className="block font-medium text-gray-900">{t('checkout.payCrypto')}</span>
                     <span className="block text-sm text-gray-500">
-                      Already hold crypto? Pay directly from your own wallet (Bitcoin or EVM chains).
+                      {t('checkout.payCryptoDesc')}
                     </span>
                   </span>
                 </label>
@@ -372,7 +378,7 @@ export default function CheckoutPage() {
               fullWidth
               size="lg"
             >
-              {loading ? 'Processing...' : 'Proceed to Payment'}
+              {loading ? t('checkout.processing') : t('checkout.proceedToPayment')}
             </Button>
           </form>
         </div>

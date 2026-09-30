@@ -66,6 +66,12 @@ export class ProductsController {
         storage: product.storage || '',
         warnings: product.warnings ? JSON.parse(product.warnings) : [],
       },
+      extendedInfoSv: {
+        specifications: product.specificationsSv ? JSON.parse(product.specificationsSv) : [],
+        usage: product.usageSv || '',
+        storage: product.storageSv || '',
+        warnings: product.warningsSv ? JSON.parse(product.warningsSv) : [],
+      },
     };
   }
 }

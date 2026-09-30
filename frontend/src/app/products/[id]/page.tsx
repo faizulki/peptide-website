@@ -6,6 +6,7 @@ import { Product, Review } from '@/types';
 import { api } from '@/lib/api';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import ReviewCard from '@/components/ReviewCard';
 import Container from '@/components/layout/Container';
 import Section from '@/components/layout/Section';
@@ -21,6 +22,7 @@ export default function ProductDetailPage() {
   const productId = params.id as string;
   const { addToCart } = useCart();
   const { formatPrice } = useCurrency();
+  const { t, pick } = useLanguage();
 
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
@@ -75,9 +77,9 @@ export default function ProductDetailPage() {
     return (
       <Container className="py-12">
         <EmptyState
-          title="Product Not Found"
-          message="The product you're looking for doesn't exist."
-          actionLabel="Return to Home"
+          title={t('product.notFound')}
+          message={t('product.notFoundMessage')}
+          actionLabel={t('product.returnHome')}
         />
       </Container>
     );
@@ -91,13 +93,13 @@ export default function ProductDetailPage() {
         </div>
 
         <div className="bg-white rounded-lg shadow-md p-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">{product.name}</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">{pick(product.name, product.nameSv)}</h1>
           <p className="text-2xl font-semibold text-blue-600 mb-6">
             {formatPrice(product.price)}
           </p>
-          
+
           <div className="mb-6">
-            <p className="text-gray-700 leading-relaxed">{product.description}</p>
+            <p className="text-gray-700 leading-relaxed">{pick(product.description, product.descriptionSv)}</p>
           </div>
 
           {product.extendedInfo && (
@@ -108,7 +110,7 @@ export default function ProductDetailPage() {
 
           <div className="border-t pt-6">
             <div className="flex items-center space-x-4 mb-6">
-              <span className="text-gray-700 font-medium">Quantity:</span>
+              <span className="text-gray-700 font-medium">{t('product.quantity')}</span>
               <QuantitySelector
                 value={quantity}
                 onChange={setQuantity}
@@ -123,7 +125,7 @@ export default function ProductDetailPage() {
               fullWidth
               size="lg"
             >
-              {isAdding ? 'Adding to Cart...' : product.inStock ? 'Add to Cart' : 'Out of Stock'}
+              {isAdding ? t('product.addingToCart') : product.inStock ? t('product.addToCart') : t('product.outOfStock')}
             </Button>
           </div>
         </div>
@@ -131,7 +133,7 @@ export default function ProductDetailPage() {
 
       {reviews.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-8">
-          <Section title="Customer Reviews">
+          <Section title={t('product.customerReviews')}>
             <div className="space-y-4">
               {reviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />

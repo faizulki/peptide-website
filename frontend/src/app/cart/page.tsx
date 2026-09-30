@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation';
 import { useCart } from '@/contexts/CartContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Container from '@/components/layout/Container';
 import Loading from '@/components/ui/Loading';
 import EmptyState from '@/components/ui/EmptyState';
@@ -11,6 +12,7 @@ import OrderSummary from '@/components/cart/OrderSummary';
 export default function CartPage() {
   const router = useRouter();
   const { cart, loading } = useCart();
+  const { t } = useLanguage();
 
   const handleCheckout = () => {
     router.push('/checkout');
@@ -28,8 +30,8 @@ export default function CartPage() {
     return (
       <Container className="py-12">
         <EmptyState
-          title="Your Cart is Empty"
-          message="Start shopping to add items to your cart."
+          title={t('cart.empty')}
+          message={t('cart.emptyMessage')}
         />
       </Container>
     );
@@ -37,7 +39,7 @@ export default function CartPage() {
 
   return (
     <Container className="py-12">
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Shopping Cart</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-8">{t('cart.title')}</h1>
       
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-4">

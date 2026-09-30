@@ -24,6 +24,17 @@ export class Product {
   @Column('text')
   shortDescription: string;
 
+  // Swedish translations — nullable, so the storefront falls back to the
+  // English fields above until an admin fills these in.
+  @Column({ nullable: true })
+  nameSv: string;
+
+  @Column('text', { nullable: true })
+  descriptionSv: string;
+
+  @Column('text', { nullable: true })
+  shortDescriptionSv: string;
+
   @Column('decimal', { precision: 10, scale: 2 })
   price: number;
 
@@ -59,6 +70,18 @@ export class Product {
 
   @Column('text', { nullable: true })
   warnings: string | null; // JSON string
+
+  @Column('text', { nullable: true })
+  specificationsSv: string | null; // JSON string
+
+  @Column('text', { nullable: true })
+  usageSv: string;
+
+  @Column('text', { nullable: true })
+  storageSv: string;
+
+  @Column('text', { nullable: true })
+  warningsSv: string | null; // JSON string
 
   @CreateDateColumn()
   createdAt: Date;

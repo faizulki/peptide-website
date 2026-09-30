@@ -1,180 +1,189 @@
+'use client';
+
+import { useLanguage } from '@/contexts/LanguageContext';
+
+const content = {
+  en: {
+    title: 'About Us',
+    sections: [
+      {
+        heading: 'Welcome to EuPeptides',
+        paragraphs: [
+          'Welcome to EuPeptides—where European scientific excellence meets uncompromising quality and regulatory integrity. While our sister company has proudly served the American market for over five years with more than 100,000 satisfied customers, we operate here in Europe under a distinct name and legal entity.',
+          'Why? Because European regulations demand a tailored approach. To fully comply with the specific legal frameworks, quality standards, and documentation requirements of the European Union, we have established EuPeptides as a fully independent, Europe-dedicated brand. This allows us to navigate the intricate regulatory landscape with precision while maintaining the same unwavering commitment to quality that our American customers have come to trust.',
+          'Today, we are proud to bring that same legacy of excellence to researchers, healthcare professionals, and wellness advocates across Europe—operating from our headquarters in the Nordic countries and Germany, with a supply chain optimized for fast, reliable delivery throughout the EU.',
+        ],
+      },
+      {
+        heading: 'Our Mission: Advancing European Research Through Accessibility',
+        paragraphs: [
+          "At the heart of EuPeptides is a simple yet powerful mission: to democratize access to premium-grade peptides for the European research community. We believe that groundbreaking scientific discovery shouldn't be hindered by supply chain barriers, regulatory confusion, or questionable quality.",
+          'Our mission is to empower researchers, healthcare professionals, and biohackers across Europe with the purest, most rigorously tested peptides available on the market. We are deeply committed to advancing the collective understanding of peptide science by ensuring that every investigator—whether in a high-tech institutional lab in Berlin, a university research center in Stockholm, or an independent home laboratory in Helsinki—has access to the same exceptional standards.',
+          'We achieve this through an unwavering dedication to transparency, regulatory compliance, and genuinely responsive customer service—all delivered with the precision and reliability you expect from a European-operated company.',
+        ],
+      },
+      {
+        heading: 'Our Quality Assurance: The Gold Standard of Purity',
+        paragraphs: [
+          "In the world of peptides, purity isn't just a metric—it is everything. That is why our Quality Assurance protocol is built on a foundation of zero compromises.",
+          'Every single batch of product we offer undergoes stringent, multi-layered quality control measures to verify its identity, purity, and biological authenticity. We partner exclusively with ISO-certified and GMP-compliant laboratories across Europe for our manufacturing and primary quality screening.',
+          'To give our customers total peace of mind, we take our transparency a step further: we provide third-party, independent Certificates of Analysis (CoAs) for every product—and these independent verifications are performed by reputable, accredited laboratories in the United States. This ensures an unbiased, rigorous, and globally recognized standard of testing that goes above and beyond routine checks.',
+          'While our CoAs are generated in U.S. labs, we want to emphasize that every product we offer is fully compliant with European Union quality and safety regulations. We meticulously cross-reference all results against EU pharmacopoeia standards, ensuring that our products not only meet but exceed the requirements set by European authorities. This dual-layer approach—U.S. independent testing combined with EU regulatory alignment—gives you the best of both worlds: world-class analytical rigor with region-specific compliance.',
+        ],
+      },
+      {
+        heading: 'Our Commitment: Your Trust is Our Greatest Asset',
+        paragraphs: [
+          'We know that choosing a peptide supplier in Europe carries significant weight—especially with the evolving regulatory environment. Having built our foundation on the proven expertise of our American sister company, we have brought that hard-earned knowledge to Europe and refined it for the unique demands of this market. Our commitment to you is multi-faceted:',
+        ],
+        list: [
+          { strong: 'Uncompromising Product Quality & Purity:', text: 'We will never cut corners on manufacturing, testing, or sourcing.' },
+          { strong: 'Full EU Regulatory Compliance:', text: 'We operate strictly within the legal frameworks of the European Union, ensuring every product meets or exceeds local requirements.' },
+          { strong: 'Secure & Seamless Payments:', text: 'Your financial safety is paramount. We utilize the most advanced, encrypted payment gateways compliant with European data protection standards.' },
+          { strong: 'Radical Transparency:', text: 'From our product sourcing to our shipping timelines, we keep you informed every step of the way.' },
+          { strong: 'White-Glove Customer Support:', text: 'Have a question about a product or your order? Our knowledgeable, multilingual support team provides fast, friendly, and accurate answers.' },
+          { strong: 'Total Privacy Protection:', text: 'We strictly adhere to GDPR regulations, ensuring your personal information and research interests remain completely confidential.' },
+        ],
+      },
+      {
+        heading: 'The Team Behind the Vials',
+        paragraphs: [
+          'EuPeptides is driven by a passionate, Europe-based team of scientists, logistics experts, and customer care specialists who share a common fascination with the therapeutic and research potential of peptides.',
+          "Operating out of our dual headquarters in the Nordic countries and Germany, we benefit from two of Europe's most advanced life-science ecosystems. Our Nordic team ensures meticulous cold-chain logistics and supply chain resilience, while our German team—located in the heart of Europe's biotech hub—oversees regulatory affairs, quality assurance, and strategic partnerships with leading European laboratories.",
+          "We aren't just sellers; we are advocates for scientific progress right here in Europe. Our team works tirelessly behind the scenes to ensure that your research never misses a beat, no matter where you are in the EU.",
+        ],
+      },
+      {
+        heading: 'Join Our European Research Community',
+        paragraphs: [
+          'While our sister company has proudly served over 100,000 customers across America over the last five years, we are now building something new and exciting here in Europe. EuPeptides represents a fresh start—one that combines proven expertise with local knowledge, regulatory precision, and a deep respect for the scientific traditions of this continent.',
+          'We are growing fast, and we invite you to be part of our journey. Whether you are a seasoned researcher or just beginning to explore the potential of peptides, you can trust EuPeptides to be your reliable partner every step of the way.',
+        ],
+      },
+      {
+        heading: "Have Questions? We're Here to Listen",
+        paragraphs: [
+          'We believe that the best partnerships are built on open communication. Whether you need technical guidance on a specific peptide, assistance tracking your order, or simply want to know more about our European sourcing and compliance, we are just a click away.',
+        ],
+      },
+    ],
+    closing1Before: "Don't hesitate to ",
+    closing1Link: 'reach out',
+    closing1After: '—our friendly, knowledgeable team is ready to assist you.',
+    closing2Before: 'Explore ',
+    closing2Link: 'our catalog',
+    closing2After: ", read our verified reviews, and discover why EuPeptides is becoming Europe's trusted peptide partner for research and wellness.",
+  },
+  sv: {
+    title: 'Om oss',
+    sections: [
+      {
+        heading: 'Välkommen till EuPeptides',
+        paragraphs: [
+          'Välkommen till EuPeptides — där europeisk vetenskaplig excellens möter kompromisslös kvalitet och regelefterlevnad. Medan vårt systerbolag stolt har betjänat den amerikanska marknaden i över fem år med fler än 100 000 nöjda kunder, verkar vi här i Europa under ett eget namn och en egen juridisk enhet.',
+          'Varför? Eftersom europeiska regler kräver ett skräddarsytt tillvägagångssätt. För att fullt ut följa EU:s specifika rättsliga ramverk, kvalitetsstandarder och dokumentationskrav har vi etablerat EuPeptides som ett helt oberoende, Europafokuserat varumärke. Detta gör att vi kan navigera det komplexa regelverket med precision samtidigt som vi upprätthåller samma orubbliga engagemang för kvalitet som våra amerikanska kunder har lärt sig lita på.',
+          'Idag är vi stolta över att föra samma arv av excellens till forskare, vårdpersonal och hälsoentusiaster runtom i Europa — verksamma från vårt huvudkontor i Norden och Tyskland, med en försörjningskedja optimerad för snabb och pålitlig leverans i hela EU.',
+        ],
+      },
+      {
+        heading: 'Vårt uppdrag: Att främja europeisk forskning genom tillgänglighet',
+        paragraphs: [
+          'I hjärtat av EuPeptides finns ett enkelt men kraftfullt uppdrag: att demokratisera tillgången till peptider av premiumkvalitet för det europeiska forskarsamhället. Vi tror att banbrytande vetenskapliga upptäckter inte bör hindras av leveranskedjebarriärer, regelförvirring eller tveksam kvalitet.',
+          'Vårt uppdrag är att ge forskare, vårdpersonal och biohackare runtom i Europa tillgång till de renaste, mest rigoröst testade peptiderna som finns på marknaden. Vi är djupt engagerade i att främja den gemensamma förståelsen av peptidvetenskap genom att säkerställa att varje forskare — oavsett om det är i ett högteknologiskt institutionslaboratorium i Berlin, ett universitetsforskningscentrum i Stockholm eller ett oberoende hemlaboratorium i Helsingfors — har tillgång till samma exceptionella standarder.',
+          'Vi uppnår detta genom ett orubbligt engagemang för transparens, regelefterlevnad och genuint lyhörd kundservice — allt levererat med den precision och tillförlitlighet du kan förvänta dig av ett europeiskt drivet företag.',
+        ],
+      },
+      {
+        heading: 'Vår kvalitetssäkring: Guldstandarden för renhet',
+        paragraphs: [
+          'I peptidernas värld är renhet inte bara ett mått — det är allt. Det är därför vårt kvalitetssäkringsprotokoll bygger på en grund av nollkompromisser.',
+          'Varje enskilt produktparti vi erbjuder genomgår rigorösa kvalitetskontroller i flera lager för att verifiera dess identitet, renhet och biologiska äkthet. Vi samarbetar uteslutande med ISO-certifierade och GMP-kompatibla laboratorier runtom i Europa för vår tillverkning och primära kvalitetsscreening.',
+          'För att ge våra kunder total sinnesro går vi ett steg längre med vår transparens: vi tillhandahåller oberoende analyscertifikat (CoA) från tredje part för varje produkt — och dessa oberoende verifieringar utförs av ansedda, ackrediterade laboratorier i USA. Detta säkerställer en opartisk, rigorös och globalt erkänd teststandard som går utöver rutinkontroller.',
+          'Även om våra CoA:er genereras i amerikanska laboratorier vill vi betona att varje produkt vi erbjuder fullt ut följer EU:s kvalitets- och säkerhetsföreskrifter. Vi jämför noggrant alla resultat mot EU:s farmakopéstandarder, vilket säkerställer att våra produkter inte bara uppfyller utan överträffar de krav som ställs av europeiska myndigheter. Detta dubbla tillvägagångssätt — oberoende amerikansk testning kombinerad med EU-regelanpassning — ger dig det bästa av två världar: förstklassig analytisk noggrannhet med regionspecifik efterlevnad.',
+        ],
+      },
+      {
+        heading: 'Vårt åtagande: Ditt förtroende är vår största tillgång',
+        paragraphs: [
+          'Vi vet att valet av peptidleverantör i Europa väger tungt — särskilt med den föränderliga regelmiljön. Genom att bygga vår grund på vårt amerikanska systerbolags beprövade expertis har vi tagit med oss den hårt förvärvade kunskapen till Europa och förfinat den för denna marknads unika krav. Vårt åtagande gentemot dig är mångfacetterat:',
+        ],
+        list: [
+          { strong: 'Kompromisslös produktkvalitet och renhet:', text: 'Vi tummar aldrig på tillverkning, testning eller inköp.' },
+          { strong: 'Full efterlevnad av EU:s regler:', text: 'Vi verkar strikt inom Europeiska unionens rättsliga ramverk och säkerställer att varje produkt uppfyller eller överträffar lokala krav.' },
+          { strong: 'Säkra och sömlösa betalningar:', text: 'Din ekonomiska säkerhet är av yttersta vikt. Vi använder de mest avancerade, krypterade betalningslösningarna som följer europeiska dataskyddsstandarder.' },
+          { strong: 'Radikal transparens:', text: 'Från produktinköp till leveranstider håller vi dig informerad varje steg på vägen.' },
+          { strong: 'Förstklassig kundsupport:', text: 'Har du en fråga om en produkt eller din beställning? Vårt kunniga, flerspråkiga supportteam ger snabba, vänliga och korrekta svar.' },
+          { strong: 'Fullständigt integritetsskydd:', text: 'Vi följer strikt GDPR-reglerna och säkerställer att din personliga information och dina forskningsintressen förblir helt konfidentiella.' },
+        ],
+      },
+      {
+        heading: 'Teamet bakom flaskorna',
+        paragraphs: [
+          'EuPeptides drivs av ett passionerat, Europabaserat team av forskare, logistikexperter och kundtjänstspecialister som delar en gemensam fascination för peptiders terapeutiska och forskningsmässiga potential.',
+          "Med vårt dubbla huvudkontor i Norden och Tyskland drar vi nytta av två av Europas mest avancerade life science-ekosystem. Vårt nordiska team säkerställer noggrann kylkedjelogistik och motståndskraftig försörjningskedja, medan vårt tyska team — beläget i hjärtat av Europas bioteknik-nav — ansvarar för regelefterlevnad, kvalitetssäkring och strategiska partnerskap med ledande europeiska laboratorier.",
+          'Vi är inte bara säljare — vi är förespråkare för vetenskapliga framsteg här i Europa. Vårt team arbetar outtröttligt bakom kulisserna för att säkerställa att din forskning aldrig missar ett steg, oavsett var i EU du befinner dig.',
+        ],
+      },
+      {
+        heading: 'Bli en del av vårt europeiska forskarsamhälle',
+        paragraphs: [
+          'Medan vårt systerbolag stolt har betjänat över 100 000 kunder i Amerika under de senaste fem åren, bygger vi nu något nytt och spännande här i Europa. EuPeptides representerar en nystart — en som kombinerar beprövad expertis med lokal kunskap, regelprecision och en djup respekt för denna kontinents vetenskapliga traditioner.',
+          'Vi växer snabbt och vi bjuder in dig att vara en del av vår resa. Oavsett om du är en erfaren forskare eller bara börjar utforska peptiders potential kan du lita på att EuPeptides är din pålitliga partner varje steg på vägen.',
+        ],
+      },
+      {
+        heading: 'Har du frågor? Vi lyssnar gärna',
+        paragraphs: [
+          'Vi tror att de bästa partnerskapen bygger på öppen kommunikation. Oavsett om du behöver teknisk vägledning om en specifik peptid, hjälp med att spåra din beställning eller helt enkelt vill veta mer om vår europeiska sourcing och efterlevnad, är vi bara ett klick bort.',
+        ],
+      },
+    ],
+    closing1Before: 'Tveka inte att ',
+    closing1Link: 'höra av dig',
+    closing1After: ' — vårt vänliga, kunniga team är redo att hjälpa dig.',
+    closing2Before: 'Utforska ',
+    closing2Link: 'vår katalog',
+    closing2After: ', läs våra verifierade recensioner och upptäck varför EuPeptides blir Europas pålitliga peptidpartner för forskning och välbefinnande.',
+  },
+};
+
 export default function AboutPage() {
+  const { language } = useLanguage();
+  const c = content[language];
+
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="bg-white rounded-lg shadow-md p-8 md:p-12">
-        <h1 className="text-4xl font-bold text-gray-900 mb-6">About Us</h1>
+        <h1 className="text-4xl font-bold text-gray-900 mb-6">{c.title}</h1>
 
         <div className="prose prose-lg max-w-none space-y-6 text-gray-700">
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">Welcome to EuPeptides</h2>
-          <p>
-            Welcome to EuPeptides—where European scientific excellence meets uncompromising
-            quality and regulatory integrity. While our sister company has proudly served the
-            American market for over five years with more than 100,000 satisfied customers, we
-            operate here in Europe under a distinct name and legal entity.
-          </p>
-          <p>
-            Why? Because European regulations demand a tailored approach. To fully comply with
-            the specific legal frameworks, quality standards, and documentation requirements of
-            the European Union, we have established EuPeptides as a fully independent,
-            Europe-dedicated brand. This allows us to navigate the intricate regulatory landscape
-            with precision while maintaining the same unwavering commitment to quality that our
-            American customers have come to trust.
-          </p>
-          <p>
-            Today, we are proud to bring that same legacy of excellence to researchers,
-            healthcare professionals, and wellness advocates across Europe—operating from our
-            headquarters in the Nordic countries and Germany, with a supply chain optimized for
-            fast, reliable delivery throughout the EU.
-          </p>
+          {c.sections.map((section) => (
+            <div key={section.heading}>
+              <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">{section.heading}</h2>
+              {section.paragraphs.map((p, idx) => (
+                <p key={idx}>{p}</p>
+              ))}
+              {'list' in section && section.list && (
+                <ul className="list-disc list-inside space-y-2 ml-4">
+                  {section.list.map((item) => (
+                    <li key={item.strong}>
+                      <strong>{item.strong}</strong> {item.text}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
 
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
-            Our Mission: Advancing European Research Through Accessibility
-          </h2>
           <p>
-            At the heart of EuPeptides is a simple yet powerful mission: to democratize access to
-            premium-grade peptides for the European research community. We believe that
-            groundbreaking scientific discovery shouldn&apos;t be hindered by supply chain
-            barriers, regulatory confusion, or questionable quality.
+            {c.closing1Before}
+            <a href="/contact" className="text-blue-600 hover:underline">{c.closing1Link}</a>
+            {c.closing1After}
           </p>
           <p>
-            Our mission is to empower researchers, healthcare professionals, and biohackers
-            across Europe with the purest, most rigorously tested peptides available on the
-            market. We are deeply committed to advancing the collective understanding of peptide
-            science by ensuring that every investigator—whether in a high-tech institutional lab
-            in Berlin, a university research center in Stockholm, or an independent home
-            laboratory in Helsinki—has access to the same exceptional standards.
-          </p>
-          <p>
-            We achieve this through an unwavering dedication to transparency, regulatory
-            compliance, and genuinely responsive customer service—all delivered with the
-            precision and reliability you expect from a European-operated company.
-          </p>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
-            Our Quality Assurance: The Gold Standard of Purity
-          </h2>
-          <p>
-            In the world of peptides, purity isn&apos;t just a metric—it is everything. That is
-            why our Quality Assurance protocol is built on a foundation of zero compromises.
-          </p>
-          <p>
-            Every single batch of product we offer undergoes stringent, multi-layered quality
-            control measures to verify its identity, purity, and biological authenticity. We
-            partner exclusively with ISO-certified and GMP-compliant laboratories across Europe
-            for our manufacturing and primary quality screening.
-          </p>
-          <p>
-            To give our customers total peace of mind, we take our transparency a step further:
-            we provide third-party, independent Certificates of Analysis (CoAs) for every
-            product—and these independent verifications are performed by reputable, accredited
-            laboratories in the United States. This ensures an unbiased, rigorous, and globally
-            recognized standard of testing that goes above and beyond routine checks.
-          </p>
-          <p>
-            While our CoAs are generated in U.S. labs, we want to emphasize that every product we
-            offer is fully compliant with European Union quality and safety regulations. We
-            meticulously cross-reference all results against EU pharmacopoeia standards, ensuring
-            that our products not only meet but exceed the requirements set by European
-            authorities. This dual-layer approach—U.S. independent testing combined with EU
-            regulatory alignment—gives you the best of both worlds: world-class analytical rigor
-            with region-specific compliance.
-          </p>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
-            Our Commitment: Your Trust is Our Greatest Asset
-          </h2>
-          <p>
-            We know that choosing a peptide supplier in Europe carries significant
-            weight—especially with the evolving regulatory environment. Having built our
-            foundation on the proven expertise of our American sister company, we have brought
-            that hard-earned knowledge to Europe and refined it for the unique demands of this
-            market. Our commitment to you is multi-faceted:
-          </p>
-          <ul className="list-disc list-inside space-y-2 ml-4">
-            <li>
-              <strong>Uncompromising Product Quality &amp; Purity:</strong> We will never cut
-              corners on manufacturing, testing, or sourcing.
-            </li>
-            <li>
-              <strong>Full EU Regulatory Compliance:</strong> We operate strictly within the
-              legal frameworks of the European Union, ensuring every product meets or exceeds
-              local requirements.
-            </li>
-            <li>
-              <strong>Secure &amp; Seamless Payments:</strong> Your financial safety is
-              paramount. We utilize the most advanced, encrypted payment gateways compliant with
-              European data protection standards.
-            </li>
-            <li>
-              <strong>Radical Transparency:</strong> From our product sourcing to our shipping
-              timelines, we keep you informed every step of the way.
-            </li>
-            <li>
-              <strong>White-Glove Customer Support:</strong> Have a question about a product or
-              your order? Our knowledgeable, multilingual support team provides fast, friendly,
-              and accurate answers.
-            </li>
-            <li>
-              <strong>Total Privacy Protection:</strong> We strictly adhere to GDPR regulations,
-              ensuring your personal information and research interests remain completely
-              confidential.
-            </li>
-          </ul>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">The Team Behind the Vials</h2>
-          <p>
-            EuPeptides is driven by a passionate, Europe-based team of scientists, logistics
-            experts, and customer care specialists who share a common fascination with the
-            therapeutic and research potential of peptides.
-          </p>
-          <p>
-            Operating out of our dual headquarters in the Nordic countries and Germany, we
-            benefit from two of Europe&apos;s most advanced life-science ecosystems. Our Nordic
-            team ensures meticulous cold-chain logistics and supply chain resilience, while our
-            German team—located in the heart of Europe&apos;s biotech hub—oversees regulatory
-            affairs, quality assurance, and strategic partnerships with leading European
-            laboratories.
-          </p>
-          <p>
-            We aren&apos;t just sellers; we are advocates for scientific progress right here in
-            Europe. Our team works tirelessly behind the scenes to ensure that your research
-            never misses a beat, no matter where you are in the EU.
-          </p>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
-            Join Our European Research Community
-          </h2>
-          <p>
-            While our sister company has proudly served over 100,000 customers across America
-            over the last five years, we are now building something new and exciting here in
-            Europe. EuPeptides represents a fresh start—one that combines proven expertise with
-            local knowledge, regulatory precision, and a deep respect for the scientific
-            traditions of this continent.
-          </p>
-          <p>
-            We are growing fast, and we invite you to be part of our journey. Whether you are a
-            seasoned researcher or just beginning to explore the potential of peptides, you can
-            trust EuPeptides to be your reliable partner every step of the way.
-          </p>
-
-          <h2 className="text-2xl font-semibold text-gray-900 mt-8 mb-4">
-            Have Questions? We&apos;re Here to Listen
-          </h2>
-          <p>
-            We believe that the best partnerships are built on open communication. Whether you
-            need technical guidance on a specific peptide, assistance tracking your order, or
-            simply want to know more about our European sourcing and compliance, we are just a
-            click away.
-          </p>
-          <p>
-            Don&apos;t hesitate to{' '}
-            <a href="/contact" className="text-blue-600 hover:underline">reach out</a>
-            —our friendly, knowledgeable team is ready to assist you.
-          </p>
-          <p>
-            Explore <a href="/" className="text-blue-600 hover:underline">our catalog</a>, read
-            our verified reviews, and discover why EuPeptides is becoming Europe&apos;s trusted
-            peptide partner for research and wellness.
+            {c.closing2Before}
+            <a href="/" className="text-blue-600 hover:underline">{c.closing2Link}</a>
+            {c.closing2After}
           </p>
         </div>
       </div>

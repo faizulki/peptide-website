@@ -10,6 +10,18 @@ export class CreateProductDto {
   @IsString()
   shortDescription: string;
 
+  @IsString()
+  @IsOptional()
+  nameSv?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionSv?: string;
+
+  @IsString()
+  @IsOptional()
+  shortDescriptionSv?: string;
+
   @IsNumber()
   @Min(0)
   price: number;
@@ -55,6 +67,22 @@ export class CreateProductDto {
   @IsArray()
   @IsOptional()
   warnings?: string[];
+
+  @IsArray()
+  @IsOptional()
+  specificationsSv?: string[];
+
+  @IsString()
+  @IsOptional()
+  usageSv?: string;
+
+  @IsString()
+  @IsOptional()
+  storageSv?: string;
+
+  @IsArray()
+  @IsOptional()
+  warningsSv?: string[];
 }
 
 export class UpdateProductDto {
@@ -69,6 +97,18 @@ export class UpdateProductDto {
   @IsString()
   @IsOptional()
   shortDescription?: string;
+
+  @IsString()
+  @IsOptional()
+  nameSv?: string;
+
+  @IsString()
+  @IsOptional()
+  descriptionSv?: string;
+
+  @IsString()
+  @IsOptional()
+  shortDescriptionSv?: string;
 
   @IsNumber()
   @IsOptional()
@@ -118,5 +158,20 @@ export class UpdateProductDto {
   @IsArray()
   @IsOptional()
   warnings?: string[];
-}
 
+  @IsArray()
+  @IsOptional()
+  specificationsSv?: string[];
+
+  @IsString()
+  @IsOptional()
+  usageSv?: string;
+
+  @IsString()
+  @IsOptional()
+  storageSv?: string;
+
+  @IsArray()
+  @IsOptional()
+  warningsSv?: string[];
+}

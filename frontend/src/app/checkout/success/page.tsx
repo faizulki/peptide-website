@@ -2,11 +2,13 @@
 
 import { useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import Container from '@/components/layout/Container';
 import Button from '@/components/ui/Button';
 
 export default function CheckoutSuccessPage() {
   const { clearCart } = useCart();
+  const { t } = useLanguage();
 
   useEffect(() => {
     clearCart();
@@ -31,13 +33,12 @@ export default function CheckoutSuccessPage() {
             />
           </svg>
         </div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Order Placed Successfully!</h1>
+        <h1 className="text-3xl font-bold text-gray-900 mb-4">{t('checkoutSuccess.title')}</h1>
         <p className="text-gray-600 mb-8">
-          Thank you for your purchase. Your order has been received and is being processed.
-          You will receive a confirmation email shortly.
+          {t('checkoutSuccess.message')}
         </p>
         <Button asLink href="/">
-          Continue Shopping
+          {t('cart.continueShopping')}
         </Button>
       </div>
     </Container>

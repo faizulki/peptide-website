@@ -1,4 +1,5 @@
 import { Controller, Get, Post, Patch, Delete, Body, Param, UseGuards, Query } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { AdminService } from './admin.service';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { AdminGuard } from '../auth/guards/admin.guard';
@@ -8,7 +9,23 @@ import { User } from '../entities/user.entity';
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(
+    private readonly adminService: AdminService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  // Lets the admin panel show the client the URL + secret to paste into
+  // Soro's webhook config once they have an account — nothing about Soro's
+  // actual payload format is known yet, so this is the one thing we can
+  // hand over ahead of time.
+  @Get('integrations/soro')
+  getSoroIntegrationConfig() {
+    const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
+    return {
+      webhookUrl: `${appUrl}/api/articles/webhook/soro`,
+      secret: this.configService.get<string>('ARTICLES_WEBHOOK_SECRET') || '',
+    };
+  }
 
   @Get('dashboard')
   async getDashboardMetrics() {

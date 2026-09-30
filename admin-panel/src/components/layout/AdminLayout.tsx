@@ -18,6 +18,7 @@ const navigation: NavItem[] = [
   { name: 'Users', href: '/users', icon: '👥' },
   { name: 'Reviews', href: '/reviews', icon: '⭐' },
   { name: 'FAQs', href: '/faqs', icon: '❓' },
+  { name: 'Articles', href: '/articles', icon: '📰' },
   { name: 'Activity Logs', href: '/logs', icon: '📝' },
 ];
 
@@ -61,7 +62,13 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="flex items-center justify-between h-16 px-6 border-b border-gray-200 dark:border-gray-700">
-            <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
+            <div className="flex items-center space-x-2">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-icon.png" alt="" className="h-8 w-8 dark:hidden" />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/logo-icon-white.png" alt="" className="h-8 w-8 hidden dark:block" />
+              <h1 className="text-xl font-bold text-gray-900 dark:text-white">Admin Panel</h1>
+            </div>
             <button
               onClick={() => setSidebarOpen(false)}
               className="lg:hidden text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"

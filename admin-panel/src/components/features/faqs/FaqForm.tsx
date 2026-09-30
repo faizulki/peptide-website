@@ -10,9 +10,12 @@ interface FaqFormProps {
 }
 
 export default function FaqForm({ faq, onSubmit, onCancel, loading }: FaqFormProps) {
+  const [lang, setLang] = useState<'en' | 'sv'>('en');
   const [formData, setFormData] = useState({
     question: '',
     answer: '',
+    questionSv: '',
+    answerSv: '',
     order: 0,
     isActive: true,
   });
@@ -22,6 +25,8 @@ export default function FaqForm({ faq, onSubmit, onCancel, loading }: FaqFormPro
       setFormData({
         question: faq.question,
         answer: faq.answer,
+        questionSv: faq.questionSv || '',
+        answerSv: faq.answerSv || '',
         order: faq.order,
         isActive: faq.isActive,
       });
@@ -35,21 +40,65 @@ export default function FaqForm({ faq, onSubmit, onCancel, loading }: FaqFormPro
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <Input
-        label="Question"
-        required
-        value={formData.question}
-        onChange={(e) => setFormData({ ...formData, question: e.target.value })}
-      />
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setLang('en')}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            lang === 'en'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+          }`}
+        >
+          English
+        </button>
+        <button
+          type="button"
+          onClick={() => setLang('sv')}
+          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+            lang === 'sv'
+              ? 'bg-indigo-600 text-white'
+              : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+          }`}
+        >
+          Svenska
+        </button>
+      </div>
 
-      <Input
-        as="textarea"
-        label="Answer"
-        required
-        rows={5}
-        value={formData.answer}
-        onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
-      />
+      {lang === 'en' ? (
+        <>
+          <Input
+            label="Question"
+            required
+            value={formData.question}
+            onChange={(e) => setFormData({ ...formData, question: e.target.value })}
+          />
+          <Input
+            as="textarea"
+            label="Answer"
+            required
+            rows={5}
+            value={formData.answer}
+            onChange={(e) => setFormData({ ...formData, answer: e.target.value })}
+          />
+        </>
+      ) : (
+        <>
+          <Input
+            label="Fråga (Question)"
+            helperText="Lämna tomt för att falla tillbaka på engelska"
+            value={formData.questionSv}
+            onChange={(e) => setFormData({ ...formData, questionSv: e.target.value })}
+          />
+          <Input
+            as="textarea"
+            label="Svar (Answer)"
+            rows={5}
+            value={formData.answerSv}
+            onChange={(e) => setFormData({ ...formData, answerSv: e.target.value })}
+          />
+        </>
+      )}
 
       <div className="grid grid-cols-2 gap-4">
         <Input
