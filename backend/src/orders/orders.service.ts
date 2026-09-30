@@ -5,7 +5,7 @@ import {
   Inject,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, Not } from 'typeorm';
 import { Order, OrderStatus, PaymentStatus } from '../entities/order.entity';
 import { OrderItem } from '../entities/order-item.entity';
 import { Cart } from '../entities/cart.entity';
@@ -244,38 +244,60 @@ export class OrdersService {
 
   async updatePaymentStatus(id: string, updatePaymentStatusDto: UpdatePaymentStatusDto): Promise<Order> {
     const order = await this.findOne(id);
-    order.paymentStatus = updatePaymentStatusDto.paymentStatus as PaymentStatus;
+    const paymentStatus = updatePaymentStatusDto.paymentStatus as PaymentStatus;
 
-    if (order.paymentStatus === PaymentStatus.PAID) {
-      // Update stock levels
-      for (const item of order.items) {
-        await this.productsService.updateStock(item.productId, item.quantity);
-      }
-      await this.clearCustomerCart(order);
+    if (paymentStatus === PaymentStatus.PAID) {
+      await this.markPaidOnce(order, {});
+      return this.findOne(id);
     }
 
+    order.paymentStatus = paymentStatus;
     return this.ordersRepository.save(order);
   }
 
+  // Called for every provider callback and also by the checkout page's
+  // status poll, so it runs many times for the same paid order — and the
+  // PayGate route is a public GET anyone can repeat. It must be idempotent.
   async handlePaymentWebhook(orderId: string, transactionId: string, status: string): Promise<Order> {
     const order = await this.findOne(orderId);
 
     if (status === 'paid' || status === 'completed') {
-      order.paymentStatus = PaymentStatus.PAID;
-      order.paymentTransactionId = transactionId;
-      order.status = OrderStatus.PENDING;
-
-      // Update stock levels
-      for (const item of order.items) {
-        await this.productsService.updateStock(item.productId, item.quantity);
-      }
-
-      await this.clearCustomerCart(order);
+      await this.markPaidOnce(order, {
+        paymentTransactionId: transactionId,
+        status: OrderStatus.PENDING,
+      });
     } else if (status === 'failed' || status === 'cancelled') {
-      order.paymentStatus = PaymentStatus.FAILED;
+      // Only a still-pending payment can fail — a late or replayed failure
+      // must never downgrade an order that has already been paid.
+      await this.ordersRepository.update(
+        { id: orderId, paymentStatus: PaymentStatus.PENDING },
+        { paymentStatus: PaymentStatus.FAILED },
+      );
     }
 
-    return this.ordersRepository.save(order);
+    return this.findOne(orderId);
+  }
+
+  // Flips an order to paid and applies the one-time effects of payment
+  // (stock decrement, cart clearing) exactly once. The conditional UPDATE
+  // is atomic, so when a provider callback and a status poll arrive at the
+  // same moment, only the one that actually changes the row goes on to
+  // touch stock; every other call — and every repeat — is a no-op. This
+  // also keeps a repeat from resetting a shipped order back to pending.
+  private async markPaidOnce(order: Order, fields: Partial<Order>): Promise<boolean> {
+    const result = await this.ordersRepository.update(
+      { id: order.id, paymentStatus: Not(PaymentStatus.PAID) },
+      { ...fields, paymentStatus: PaymentStatus.PAID },
+    );
+    if (!result.affected) {
+      return false;
+    }
+
+    for (const item of order.items) {
+      await this.productsService.updateStock(item.productId, item.quantity);
+    }
+    await this.clearCustomerCart(order);
+    return true;
   }
 
   // Only called once payment is actually confirmed — see the note in
