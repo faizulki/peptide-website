@@ -7,6 +7,7 @@ const en = {
   'nav.about': 'About Us',
   'nav.faq': 'FAQ',
   'nav.blog': 'Blog',
+  'nav.labReports': 'Lab Reports',
   'nav.contact': 'Contact',
   'nav.signIn': 'Sign In',
   'nav.signUp': 'Sign Up',
@@ -71,6 +72,18 @@ const en = {
   'cart.emptyMessage': 'Start shopping to add items to your cart.',
   'cart.remove': 'Remove',
   'cart.continueShopping': 'Continue Shopping',
+
+  'labReports.title': 'Lab Reports',
+  'labReports.subtitle':
+    'Independent third-party analysis (certificates of analysis) for our products. Click a report to view it in full size.',
+  'labReports.empty': 'Lab reports will be published here soon.',
+  'labReports.productSection': 'Lab reports',
+  'labReports.productIntro': 'Independent third-party analysis for this product. Click to view in full size.',
+  'labReports.batch': 'Batch',
+  'labReports.tested': 'Tested',
+  'labReports.viewProduct': 'View product',
+  'labReports.openFull': 'Open full size',
+  'labReports.close': 'Close',
 
   'orderSummary.title': 'Order Summary',
   'orderSummary.subtotal': 'Subtotal',
@@ -165,6 +178,7 @@ const sv: Record<TranslationKey, string> = {
   'nav.about': 'Om oss',
   'nav.faq': 'Vanliga frågor',
   'nav.blog': 'Blogg',
+  'nav.labReports': 'Labbrapporter',
   'nav.contact': 'Kontakt',
   'nav.signIn': 'Logga in',
   'nav.signUp': 'Registrera dig',
@@ -229,6 +243,18 @@ const sv: Record<TranslationKey, string> = {
   'cart.emptyMessage': 'Börja handla för att lägga till varor i din varukorg.',
   'cart.remove': 'Ta bort',
   'cart.continueShopping': 'Fortsätt handla',
+
+  'labReports.title': 'Labbrapporter',
+  'labReports.subtitle':
+    'Oberoende analyser från tredje part (analyscertifikat) för våra produkter. Klicka på en rapport för att visa den i full storlek.',
+  'labReports.empty': 'Labbrapporter publiceras här inom kort.',
+  'labReports.productSection': 'Labbrapporter',
+  'labReports.productIntro': 'Oberoende analys från tredje part för denna produkt. Klicka för att visa i full storlek.',
+  'labReports.batch': 'Batch',
+  'labReports.tested': 'Testad',
+  'labReports.viewProduct': 'Visa produkt',
+  'labReports.openFull': 'Öppna i full storlek',
+  'labReports.close': 'Stäng',
 
   'orderSummary.title': 'Ordersammanfattning',
   'orderSummary.subtotal': 'Delsumma',

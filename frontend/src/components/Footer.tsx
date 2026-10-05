@@ -22,6 +22,7 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-gray-400">
               <li><a href="/" className="hover:text-white">{t('nav.products')}</a></li>
               <li><a href="/about" className="hover:text-white">{t('nav.about')}</a></li>
+              <li><a href="/lab-reports" className="hover:text-white">{t('nav.labReports')}</a></li>
               <li><a href="/blog" className="hover:text-white">{t('nav.blog')}</a></li>
               <li><a href="/faq" className="hover:text-white">{t('nav.faq')}</a></li>
               <li><a href="/contact" className="hover:text-white">{t('nav.contact')}</a></li>

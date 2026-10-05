@@ -7,6 +7,7 @@ import {
   Faq,
   Article,
   AffiliateCodeInfo,
+  LabReport,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -123,6 +124,10 @@ export const api = {
 
   trackAffiliateClick: (code: string): Promise<AffiliateCodeInfo> =>
     request(`/affiliates/lookup/${encodeURIComponent(code)}/click`, { method: 'POST' }),
+
+  // Lab reports — all visible products, or one product's
+  getLabReports: (productId?: string): Promise<LabReport[]> =>
+    request(productId ? `/lab-reports?productId=${encodeURIComponent(productId)}` : '/lab-reports'),
 
   // FAQs
   getFaqs: (): Promise<Faq[]> => request('/faqs'),

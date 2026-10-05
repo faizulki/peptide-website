@@ -201,3 +201,20 @@ export interface AffiliateDetails extends Affiliate {
   orders: AffiliateOrder[];
   payouts: AffiliatePayout[];
 }
+
+export interface LabReport {
+  id: string;
+  productId: string;
+  image: string;
+  batchNumber: string | null;
+  // YYYY-MM-DD
+  testDate: string | null;
+  createdAt: string;
+}
+
+export type LabReportInput = {
+  productId: string;
+  image: string;
+  batchNumber?: string;
+  testDate?: string;
+};

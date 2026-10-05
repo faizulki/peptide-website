@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
-import { Product, Review } from '@/types';
+import { Product, Review, LabReport } from '@/types';
 import { api } from '@/lib/api';
 import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
@@ -14,6 +14,7 @@ import Loading from '@/components/ui/Loading';
 import EmptyState from '@/components/ui/EmptyState';
 import ProductImage from '@/components/product/ProductImage';
 import ProductSpecifications from '@/components/product/ProductSpecifications';
+import LabReportGallery from '@/components/product/LabReportGallery';
 import QuantitySelector from '@/components/ui/QuantitySelector';
 import Button from '@/components/ui/Button';
 
@@ -26,6 +27,7 @@ export default function ProductDetailPage() {
 
   const [product, setProduct] = useState<Product | null>(null);
   const [reviews, setReviews] = useState<Review[]>([]);
+  const [labReports, setLabReports] = useState<LabReport[]>([]);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(true);
   const [isAdding, setIsAdding] = useState(false);
@@ -49,6 +51,11 @@ export default function ProductDetailPage() {
 
     if (productId) {
       loadData();
+      // Loaded separately so a failure here never hides the product itself.
+      api
+        .getLabReports(productId)
+        .then(setLabReports)
+        .catch((error) => console.error('Error loading lab reports:', error));
     }
   }, [productId]);
 
@@ -130,6 +137,14 @@ export default function ProductDetailPage() {
           </div>
         </div>
       </div>
+
+      {labReports.length > 0 && (
+        <div className="bg-white rounded-lg shadow-md p-8 mb-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">{t('labReports.productSection')}</h2>
+          <p className="text-gray-600 mb-6">{t('labReports.productIntro')}</p>
+          <LabReportGallery reports={labReports} label={pick(product.name, product.nameSv)} />
+        </div>
+      )}
 
       {reviews.length > 0 && (
         <div className="bg-white rounded-lg shadow-md p-8">

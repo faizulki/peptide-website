@@ -12,6 +12,8 @@ import {
   AffiliateInput,
   AffiliateDetails,
   AffiliatePayout,
+  LabReport,
+  LabReportInput,
 } from '@/types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
@@ -204,6 +206,19 @@ export const adminApi = {
   // Activity logs
   getActivityLogs: (limit: number = 100): Promise<ActivityLog[]> =>
     request(`/admin/logs?limit=${limit}`),
+
+  // Lab reports
+  getProductLabReports: (productId: string): Promise<LabReport[]> =>
+    request(`/lab-reports/admin/product/${productId}`),
+
+  createLabReport: (data: LabReportInput): Promise<LabReport> =>
+    request('/lab-reports', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  deleteLabReport: (id: string): Promise<void> =>
+    request(`/lab-reports/${id}`, { method: 'DELETE' }),
 
   // Affiliates
   getAffiliates: (): Promise<Affiliate[]> => request('/affiliates'),

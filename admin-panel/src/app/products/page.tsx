@@ -7,7 +7,7 @@ import { Product } from '@/types';
 import { PageHeader, PageLayout, FilterBar, Card } from '@/components/layout';
 import { Button, Modal } from '@/components/ui';
 import { StatusBadge } from '@/components/table';
-import { ProductForm } from '@/components/features/products';
+import { ProductForm, LabReportsManager } from '@/components/features/products';
 import Link from 'next/link';
 
 export default function ProductsPage() {
@@ -18,6 +18,7 @@ export default function ProductsPage() {
     enabled: !!user,
   });
   const modal = useModal<Product>();
+  const labReportsModal = useModal<Product>();
   const { confirm } = useConfirm();
 
   const handleToggleActive = async (product: Product) => {
@@ -161,6 +162,13 @@ export default function ProductsPage() {
                     <Button
                       variant="ghost"
                       size="sm"
+                      onClick={() => labReportsModal.open(product)}
+                    >
+                      Lab reports
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
                       onClick={() => handleToggleActive(product)}
                     >
                       {product.isActive ? 'Deactivate' : 'Activate'}
@@ -198,6 +206,15 @@ export default function ProductsPage() {
           onSubmit={handleSave}
           onCancel={modal.close}
         />
+      </Modal>
+
+      <Modal
+        isOpen={labReportsModal.isOpen}
+        onClose={labReportsModal.close}
+        title={labReportsModal.data ? `Lab reports — ${labReportsModal.data.name}` : 'Lab reports'}
+        size="xl"
+      >
+        {labReportsModal.data && <LabReportsManager product={labReportsModal.data} />}
       </Modal>
     </PageLayout>
   );

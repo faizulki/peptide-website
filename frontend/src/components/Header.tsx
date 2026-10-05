@@ -9,6 +9,7 @@ import { useState } from 'react';
 const navLinks = [
   { href: '/', key: 'nav.products' as const },
   { href: '/about', key: 'nav.about' as const },
+  { href: '/lab-reports', key: 'nav.labReports' as const },
   { href: '/blog', key: 'nav.blog' as const },
   { href: '/faq', key: 'nav.faq' as const },
   { href: '/contact', key: 'nav.contact' as const },
@@ -39,7 +40,7 @@ export default function Header() {
             <span className="text-2xl font-bold text-blue-600 truncate">EuPeptides</span>
           </Link>
 
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden xl:flex items-center space-x-8">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
@@ -52,7 +53,7 @@ export default function Header() {
           </nav>
 
           <div className="flex items-center space-x-2 sm:space-x-4">
-            <div className="hidden md:flex items-center rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
+            <div className="hidden xl:flex items-center rounded-lg border border-gray-200 overflow-hidden text-sm font-medium">
               <button
                 onClick={() => setLanguage('en')}
                 className={`px-2 py-1 transition-colors ${
@@ -98,7 +99,7 @@ export default function Header() {
             </Link>
 
             {user ? (
-              <div className="relative hidden md:block">
+              <div className="relative hidden xl:block">
                 <button
                   onClick={() => setShowUserMenu(!showUserMenu)}
                   className="flex items-center space-x-2 px-3 py-2 rounded-lg hover:bg-gray-100 transition-colors max-w-[180px]"
@@ -130,7 +131,7 @@ export default function Header() {
                 )}
               </div>
             ) : (
-              <div className="hidden md:flex items-center space-x-2">
+              <div className="hidden xl:flex items-center space-x-2">
                 <Link
                   href="/signin"
                   className="px-4 py-2 text-gray-700 hover:text-blue-600 transition-colors"
@@ -148,7 +149,7 @@ export default function Header() {
 
             <button
               onClick={() => setShowMobileMenu(!showMobileMenu)}
-              className="md:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
+              className="xl:hidden p-2 text-gray-700 hover:text-blue-600 transition-colors"
               aria-label="Menu"
               aria-expanded={showMobileMenu}
             >
@@ -164,7 +165,7 @@ export default function Header() {
         </div>
 
         {showMobileMenu && (
-          <div className="md:hidden border-t border-gray-200 py-4 space-y-4">
+          <div className="xl:hidden border-t border-gray-200 py-4 space-y-4">
             <nav className="flex flex-col space-y-1">
               {navLinks.map((link) => (
                 <Link

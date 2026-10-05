@@ -111,3 +111,14 @@ export interface Article {
   updatedAt: string;
 }
 
+
+export interface LabReport {
+  id: string;
+  productId: string;
+  image: string;
+  batchNumber: string | null;
+  // YYYY-MM-DD
+  testDate: string | null;
+  createdAt: string;
+  product?: { id: string; name: string; nameSv: string | null; image: string };
+}
