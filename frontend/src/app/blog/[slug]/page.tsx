@@ -67,7 +67,7 @@ export default function ArticleDetailPage() {
           {pick(article.title, article.titleSv)}
         </h1>
         <div
-          className="prose prose-lg max-w-none text-gray-700"
+          className="prose prose-lg prose-img:rounded-lg max-w-none text-gray-700"
           dangerouslySetInnerHTML={{ __html: sanitizedContent }}
         />
       </div>
