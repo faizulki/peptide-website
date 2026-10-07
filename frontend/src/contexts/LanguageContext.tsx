@@ -11,8 +11,9 @@ interface LanguageContextType {
   language: Language;
   setLanguage: (lang: Language) => void;
   t: (key: TranslationKey) => string;
-  // Picks the Swedish variant of a bilingual field when active, falling
-  // back to English whenever no Swedish translation has been entered yet.
+  // Picks the variant of a bilingual field for the active language, falling
+  // back to the other language when that one hasn't been filled in (e.g. an
+  // article written only in Swedish still shows to English visitors).
   pick: (en: string | null | undefined, sv: string | null | undefined) => string;
 }
 
@@ -38,8 +39,8 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
   };
 
   const pick = (en: string | null | undefined, sv: string | null | undefined): string => {
-    if (language === 'sv' && sv && sv.trim()) return sv;
-    return en || '';
+    if (language === 'sv') return sv?.trim() ? sv : en || '';
+    return en?.trim() ? en : sv || '';
   };
 
   return (

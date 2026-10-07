@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Article } from '@/types';
 import { Input, Checkbox, Button } from '@/components/ui';
+import RichTextEditor from '@/components/ui/RichTextEditor';
 
 interface ArticleFormProps {
   article?: Article | null;
@@ -11,6 +12,7 @@ interface ArticleFormProps {
 
 export default function ArticleForm({ article, onSubmit, onCancel, loading }: ArticleFormProps) {
   const [lang, setLang] = useState<'en' | 'sv'>('en');
+  const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     title: '',
     titleSv: '',
@@ -41,14 +43,27 @@ export default function ArticleForm({ article, onSubmit, onCancel, loading }: Ar
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // An article can be written in English, Swedish or both — the website
+    // shows whichever language exists — but it needs a title and content.
+    if (!formData.title.trim() && !formData.titleSv.trim()) {
+      setError('Add a title in English or Swedish.');
+      return;
+    }
+    if (!formData.content.trim() && !formData.contentSv.trim()) {
+      setError('Add the article text in English or Swedish.');
+      return;
+    }
+    setError('');
     await onSubmit(formData);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
+      {error && <p className="text-sm text-red-600 dark:text-red-400">{error}</p>}
+
       <Input
-        label="Slug"
-        helperText="Leave blank to auto-generate from the English title"
+        label="Slug (web address)"
+        helperText="The end of the article's link, e.g. eupeptides.org/blog/my-article. Leave blank to create it from the title."
         value={formData.slug}
         onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
       />
@@ -95,7 +110,7 @@ export default function ArticleForm({ article, onSubmit, onCancel, loading }: Ar
           <div className="space-y-4">
             <Input
               label="Title"
-              required
+              helperText="Leave empty if the article is only in Swedish"
               value={formData.title}
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
             />
@@ -106,20 +121,17 @@ export default function ArticleForm({ article, onSubmit, onCancel, loading }: Ar
               value={formData.metaDescription}
               onChange={(e) => setFormData({ ...formData, metaDescription: e.target.value })}
             />
-            <Input
-              as="textarea"
-              label="Content (HTML)"
-              required
-              rows={12}
+            <RichTextEditor
+              label="Content"
               value={formData.content}
-              onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+              onChange={(html) => setFormData((prev) => ({ ...prev, content: html }))}
             />
           </div>
         ) : (
           <div className="space-y-4">
             <Input
               label="Titel (Title)"
-              helperText="Lämna tomt för att falla tillbaka på engelska"
+              helperText="Lämna tomt om artikeln bara finns på engelska"
               value={formData.titleSv}
               onChange={(e) => setFormData({ ...formData, titleSv: e.target.value })}
             />
@@ -130,12 +142,10 @@ export default function ArticleForm({ article, onSubmit, onCancel, loading }: Ar
               value={formData.metaDescriptionSv}
               onChange={(e) => setFormData({ ...formData, metaDescriptionSv: e.target.value })}
             />
-            <Input
-              as="textarea"
-              label="Innehåll (Content, HTML)"
-              rows={12}
+            <RichTextEditor
+              label="Innehåll (Content)"
               value={formData.contentSv}
-              onChange={(e) => setFormData({ ...formData, contentSv: e.target.value })}
+              onChange={(html) => setFormData((prev) => ({ ...prev, contentSv: html }))}
             />
           </div>
         )}

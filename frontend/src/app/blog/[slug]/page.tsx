@@ -5,6 +5,7 @@ import { useParams } from 'next/navigation';
 import DOMPurify from 'isomorphic-dompurify';
 import { Article } from '@/types';
 import { api } from '@/lib/api';
+import { toArticleHtml } from '@/lib/articleContent';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Container from '@/components/layout/Container';
 import Loading from '@/components/ui/Loading';
@@ -49,7 +50,7 @@ export default function ArticleDetailPage() {
   }
 
   const content = pick(article.content, article.contentSv);
-  const sanitizedContent = DOMPurify.sanitize(content);
+  const sanitizedContent = DOMPurify.sanitize(toArticleHtml(content));
 
   return (
     <Container maxWidth="4xl" className="py-12">

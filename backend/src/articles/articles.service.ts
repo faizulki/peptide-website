@@ -6,6 +6,10 @@ import { CreateArticleDto, UpdateArticleDto } from './dto/article.dto';
 
 function slugify(text: string): string {
   return text
+    // Strip accents so Swedish titles keep their letters (å/ä → a, ö → o)
+    // instead of losing them, e.g. "Jämförelse" → "jamforelse".
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .trim()
     .replace(/[^a-z0-9]+/g, '-')
@@ -62,18 +66,22 @@ export class ArticlesService {
   }
 
   private async uniqueSlug(base: string, ignoreId?: string): Promise<string> {
-    let slug = base || 'article';
+    const root = base || 'article';
+    let slug = root;
     let suffix = 1;
     while (true) {
       const existing = await this.articlesRepository.findOne({ where: { slug } });
       if (!existing || existing.id === ignoreId) return slug;
       suffix += 1;
-      slug = `${base}-${suffix}`;
+      slug = `${root}-${suffix}`;
     }
   }
 
   async create(dto: CreateArticleDto): Promise<Article> {
-    const slug = await this.uniqueSlug(slugify(dto.slug || dto.title));
+    // Articles may be written only in Swedish, so fall back to that title.
+    const slug = await this.uniqueSlug(
+      slugify(dto.slug || dto.title || dto.titleSv || ''),
+    );
     const article = this.articlesRepository.create({
       title: dto.title,
       titleSv: dto.titleSv,
@@ -91,13 +99,16 @@ export class ArticlesService {
 
   async update(id: string, dto: UpdateArticleDto): Promise<Article> {
     const article = await this.findOne(id);
-    for (const [key, value] of Object.entries(dto)) {
+    const { slug, ...fields } = dto;
+    for (const [key, value] of Object.entries(fields)) {
       if (value !== undefined) {
         (article as any)[key] = value;
       }
     }
-    if (dto.slug) {
-      article.slug = await this.uniqueSlug(slugify(dto.slug), id);
+    // A blank slug means "create it from the title" (never store it empty).
+    if (slug !== undefined) {
+      const source = slug.trim() || article.title || article.titleSv || '';
+      article.slug = await this.uniqueSlug(slugify(source), id);
     }
     return this.articlesRepository.save(article);
   }
