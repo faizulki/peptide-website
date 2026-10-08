@@ -118,6 +118,17 @@ const en = {
   'checkout.proceedToPayment': 'Proceed to Payment',
   'checkout.choosePaymentProvider': 'Choose a Payment Provider',
   'checkout.choosePaymentProviderDesc': "Select how you'd like to pay. You'll be taken straight to that provider.",
+  'checkout.howPaymentWorks.title': 'When and how payment happens',
+  'checkout.howPaymentWorks.step1': 'You check out and complete your purchase.',
+  'checkout.howPaymentWorks.step2':
+    'Payment is made in crypto, which is transferred directly to us as payment for your product.',
+  'checkout.howPaymentWorks.step3':
+    "You don't need to own crypto or have a crypto wallet — the whole process is handled by our payment provider.",
+  'checkout.howPaymentWorks.step4':
+    'Depending on the currency you choose, the currency shown by the payment provider may differ, but the amount you pay always corresponds to exactly the same total as your order — you always pay the right price.',
+  'checkout.howPaymentWorks.step5': 'The payment can take up to 24 hours to go through before it is confirmed.',
+  'checkout.howPaymentWorks.warning':
+    'IMPORTANT: Never press the back button during the payment process — it can interrupt your payment.',
   'checkout.failedGeneric': 'Something went wrong while starting the payment. Please try again.',
   'checkout.providerUnavailable':
     "We couldn't start the payment because our payment provider isn't responding right now. Please try again in a few minutes — nothing has been charged.",
@@ -293,6 +304,17 @@ const sv: Record<TranslationKey, string> = {
   'checkout.proceedToPayment': 'Gå vidare till betalning',
   'checkout.choosePaymentProvider': 'Välj en betalningsleverantör',
   'checkout.choosePaymentProviderDesc': 'Välj hur du vill betala. Du tas direkt till den leverantören.',
+  'checkout.howPaymentWorks.title': 'När och hur betalningen sker',
+  'checkout.howPaymentWorks.step1': 'Du checkar ut och genomför ditt köp.',
+  'checkout.howPaymentWorks.step2':
+    'Betalningen sker via krypto, som överförs direkt till oss som betalning för din produkt.',
+  'checkout.howPaymentWorks.step3':
+    'Du behöver varken äga krypto eller ha en kryptoplånbok — hela processen hanteras av vår betalningsleverantör.',
+  'checkout.howPaymentWorks.step4':
+    'Beroende på vilken valuta du väljer kan valutan skilja sig hos betalningsleverantören, men beloppet du betalar motsvarar alltid exakt samma summa som din beställning — du betalar alltid rätt pris.',
+  'checkout.howPaymentWorks.step5': 'Betalningen kan ta upp till 24 timmar att gå igenom innan den är bekräftad.',
+  'checkout.howPaymentWorks.warning':
+    'VIKTIGT: Tryck aldrig på bakåtknappen under betalningsprocessen — det kan avbryta din betalning.',
   'checkout.failedGeneric': 'Något gick fel när betalningen skulle startas. Försök igen.',
   'checkout.providerUnavailable':
     'Vi kunde inte starta betalningen eftersom vår betalningsleverantör inte svarar just nu. Försök igen om några minuter — inget har debiterats.',

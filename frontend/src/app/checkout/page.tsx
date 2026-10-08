@@ -37,6 +37,15 @@ const countryOptions = [
   { value: 'Serbia', label: { en: 'Serbia', sv: 'Serbien' } },
 ];
 
+// "When and how payment happens", shown above the payment provider list.
+const PAYMENT_STEPS = [
+  'checkout.howPaymentWorks.step1',
+  'checkout.howPaymentWorks.step2',
+  'checkout.howPaymentWorks.step3',
+  'checkout.howPaymentWorks.step4',
+  'checkout.howPaymentWorks.step5',
+] as const;
+
 const DEFAULT_FORM_DATA: CheckoutData = {
   firstName: '',
   lastName: '',
@@ -153,6 +162,15 @@ export default function CheckoutPage() {
     saveDraft(formData);
   }, [formData]);
 
+  // The payment step replaces the long checkout form, but the browser keeps
+  // the scroll position from the submit button at its bottom — start the new
+  // step at the top so "how payment works" is the first thing seen.
+  useEffect(() => {
+    if (providerOptions || cryptoCheckout) {
+      window.scrollTo({ top: 0 });
+    }
+  }, [providerOptions, cryptoCheckout]);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     setFormData({
       ...formData,
@@ -209,6 +227,24 @@ export default function CheckoutPage() {
   if (providerOptions) {
     return (
       <Container maxWidth="2xl" className="py-12">
+        <section className="bg-white rounded-lg shadow-md p-8 mb-6" aria-labelledby="how-payment-works">
+          <h2 id="how-payment-works" className="text-xl font-bold text-gray-900 mb-4">
+            {t('checkout.howPaymentWorks.title')}
+          </h2>
+          <ol className="list-decimal pl-5 space-y-2 text-gray-700">
+            {PAYMENT_STEPS.map((key) => (
+              <li key={key}>{t(key)}</li>
+            ))}
+          </ol>
+          <p
+            role="note"
+            className="mt-5 flex gap-2 rounded-lg border border-amber-300 bg-amber-50 p-4 font-semibold text-amber-900"
+          >
+            <span aria-hidden="true">⚠️</span>
+            <span>{t('checkout.howPaymentWorks.warning')}</span>
+          </p>
+        </section>
+
         <div className="bg-white rounded-lg shadow-md p-8">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{t('checkout.choosePaymentProvider')}</h1>
           <p className="text-gray-600 mb-6">
