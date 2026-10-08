@@ -4,16 +4,22 @@ import { User, UserRole } from '../entities/user.entity';
 import { Product } from '../entities/product.entity';
 import { Faq } from '../entities/faq.entity';
 
+// Runs on every backend start (docker-entrypoint.sh), so it must only ever
+// fill in a brand-new, empty database. It used to "sync" on each start:
+// re-inserting any of its placeholder products an admin had deleted, hiding
+// every product not in its list, and restoring deleted FAQs — so every
+// deploy undid catalog changes made in the admin panel.
 export async function seedDatabase(dataSource: DataSource) {
   const userRepository = dataSource.getRepository(User);
   const productRepository = dataSource.getRepository(Product);
 
-  // Create default admin user
-  const adminExists = await userRepository.findOne({
-    where: { email: 'admin@example.com' },
+  // A default admin only when there's no admin at all (fresh install), so a
+  // deleted or renamed default account is never recreated.
+  const adminCount = await userRepository.count({
+    where: { role: UserRole.ADMIN },
   });
 
-  if (!adminExists) {
+  if (adminCount === 0) {
     const hashedPassword = await bcrypt.hash('admin123', 10);
     const admin = userRepository.create({
       email: 'admin@example.com',
@@ -26,9 +32,7 @@ export async function seedDatabase(dataSource: DataSource) {
     console.log('✅ Default admin user created (admin@example.com / admin123)');
   }
 
-  // Product catalog. Prices below are PLACEHOLDERS (EUR, TBD) — update via
-  // the admin panel before launch. Only used to fill in products that don't
-  // already exist; never overwrites a price an admin has already set.
+  // Starter catalog for a fresh install only. Prices are PLACEHOLDERS (EUR).
   const products = [
     {
       name: 'Retatrutide 1mg Research Kit',
@@ -200,31 +204,14 @@ export async function seedDatabase(dataSource: DataSource) {
     },
   ];
 
-  // Soft-hide any previously-seeded demo products that aren't part of this
-  // catalog, rather than deleting them — old orders/reviews still reference
-  // them by id, and a hard delete would violate those foreign keys.
-  const catalogNames = products.map((p) => p.name);
-  await productRepository
-    .createQueryBuilder()
-    .update(Product)
-    .set({ isActive: false, isVisible: false })
-    .where('name NOT IN (:...names)', { names: catalogNames })
-    .execute();
-
-  // Insert only what's missing so re-running this never clobbers prices an
-  // admin has already edited for these products.
-  for (const productData of products) {
-    const existing = await productRepository.findOne({ where: { name: productData.name } });
-    if (!existing) {
-      const product = productRepository.create(productData);
-      await productRepository.save(product);
-    }
+  // Only into an empty catalog. Once any product exists, the catalog belongs
+  // to the admin panel: nothing is re-added, hidden or changed here.
+  if ((await productRepository.count()) === 0) {
+    await productRepository.save(products.map((p) => productRepository.create(p)));
+    console.log('✅ Starter product catalog created (placeholder prices — update before launch)');
   }
-  console.log('✅ Product catalog synced (placeholder prices on new items — update before launch)');
 
-  // Seed the FAQ page's original hardcoded content into the database, now
-  // that it's admin-editable. Only inserts what's missing (by question
-  // text), so this never overwrites anything an admin has already edited.
+  // The FAQ page's original content, likewise only for an empty FAQ table.
   const faqRepository = dataSource.getRepository(Faq);
   const faqs = [
     {
@@ -289,13 +276,9 @@ export async function seedDatabase(dataSource: DataSource) {
     },
   ];
 
-  for (const faqData of faqs) {
-    const existing = await faqRepository.findOne({ where: { question: faqData.question } });
-    if (!existing) {
-      const faq = faqRepository.create(faqData);
-      await faqRepository.save(faq);
-    }
+  if ((await faqRepository.count()) === 0) {
+    await faqRepository.save(faqs.map((f) => faqRepository.create(f)));
+    console.log('✅ Starter FAQ content created');
   }
-  console.log('✅ FAQ content synced');
 }
 
