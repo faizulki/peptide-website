@@ -3,6 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 import { UPLOADS_DIR } from './uploads/uploads.controller';
+import { UpstreamErrorFilter } from './common/upstream-error.filter';
 
 async function bootstrap() {
   // rawBody keeps the unparsed request bytes available (req.rawBody), which
@@ -30,6 +31,10 @@ async function bootstrap() {
       transform: true,
     }),
   );
+
+  // Failed outgoing requests (payment provider, FX rates) that weren't
+  // handled where they were made: one log line and a clean 502.
+  app.useGlobalFilters(new UpstreamErrorFilter());
 
   // Global prefix
   app.setGlobalPrefix('api');

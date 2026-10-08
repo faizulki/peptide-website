@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import QRCode from 'qrcode';
 import { CryptoCoinOption } from '@/types';
 import { api } from '@/lib/api';
+import { checkoutErrorMessage } from '@/lib/checkoutErrors';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
@@ -49,8 +50,8 @@ export default function CryptoPaymentFlow({ orderId, coins }: CryptoPaymentFlowP
     try {
       const result = await api.selectCryptoCoin(orderId, coin.path);
       setPayment({ address: result.address, amountCoin: result.amountCoin });
-    } catch (err: any) {
-      setError(err.message || 'Failed to generate a payment address for this coin');
+    } catch (err) {
+      setError(checkoutErrorMessage(err, t));
       setSelectedCoin(null);
     } finally {
       setLoadingAddress(false);

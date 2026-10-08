@@ -134,20 +134,19 @@ export class OrdersService {
       paymentMethod: 'PAYGATE',
     });
 
-    const savedOrder = await this.ordersRepository.save(order);
-
-    // Deliberately not clearing the cart anywhere in this method — the
-    // customer hasn't paid yet at this point. Clearing it here meant an
-    // abandoned or failed payment left them with an empty cart and no way
-    // to retry. It's cleared instead once handlePaymentWebhook confirms the
-    // payment actually succeeded.
+    // Steps that can fail but don't need the order run before it's saved,
+    // so a missing exchange rate or an unreachable payment provider doesn't
+    // leave a stray unpaid order behind.
+    const gateway = this.paymentGateway;
+    const currency = checkoutDto.currency || 'EUR';
 
     // 'crypto': hand back the coin picker built from our own UI instead of
     // creating a payment request now — which specific coin (and therefore
     // which wallet.php call) isn't known until the customer picks one via
     // selectCryptoCoin(), below.
-    if (checkoutDto.paymentType === 'crypto' && this.paymentGateway instanceof PayGateService) {
-      const cryptoCoins = await this.paymentGateway.getCryptoCoinOptions();
+    if (checkoutDto.paymentType === 'crypto' && gateway instanceof PayGateService) {
+      const cryptoCoins = await gateway.getCryptoCoinOptions();
+      const savedOrder = await this.ordersRepository.save(order);
       return { order: savedOrder, cryptoCoins };
     }
 
@@ -156,20 +155,42 @@ export class OrdersService {
     // can't drift. Only the payment-gateway-facing amount is converted, so
     // the customer pays (and PayGate's provider list is chosen) in their
     // selected currency without touching stored order totals.
-    const currency = checkoutDto.currency || 'EUR';
     const gatewayAmount = await this.currencyService.convertFromEur(total, currency);
 
-    const { paymentUrl, requestId, providers } = await this.paymentGateway.createPaymentRequest(
-      savedOrder.id,
-      gatewayAmount,
-      currency,
-      checkoutDto.email,
-    );
+    const savedOrder = await this.ordersRepository.save(order);
 
-    savedOrder.paymentRequestId = requestId;
+    // Deliberately not clearing the cart anywhere in this method — the
+    // customer hasn't paid yet at this point. Clearing it here meant an
+    // abandoned or failed payment left them with an empty cart and no way
+    // to retry. It's cleared instead once handlePaymentWebhook confirms the
+    // payment actually succeeded.
+
+    let paymentRequest: Awaited<ReturnType<PaymentGateway['createPaymentRequest']>>;
+    try {
+      paymentRequest = await gateway.createPaymentRequest(
+        savedOrder.id,
+        gatewayAmount,
+        currency,
+        checkoutDto.email,
+      );
+    } catch (err) {
+      // The payment never started, so the order can't be paid — mark it
+      // so it doesn't sit in the admin panel looking like it's awaiting
+      // payment. The customer gets the error and can simply try again.
+      savedOrder.status = OrderStatus.CANCELLED;
+      savedOrder.paymentStatus = PaymentStatus.FAILED;
+      await this.ordersRepository.save(savedOrder);
+      throw err;
+    }
+
+    savedOrder.paymentRequestId = paymentRequest.requestId;
     await this.ordersRepository.save(savedOrder);
 
-    return { order: savedOrder, paymentUrl, providers };
+    return {
+      order: savedOrder,
+      paymentUrl: paymentRequest.paymentUrl,
+      providers: paymentRequest.providers,
+    };
   }
 
   // Called once the customer picks a specific coin on our direct-crypto UI

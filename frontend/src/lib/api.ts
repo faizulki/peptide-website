@@ -12,6 +12,19 @@ import {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
 
+// Carries the HTTP status and the backend's machine-readable `code` (when it
+// sends one) so callers can show a translated message for known failures.
+export class ApiError extends Error {
+  constructor(
+    message: string,
+    public status: number,
+    public code?: string,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+  }
+}
+
 export const generateGuestId = (): string => {
   return `guest_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 };
@@ -30,7 +43,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const message = Array.isArray(body?.message)
       ? body.message.join(', ')
       : body?.message || `Request failed with status ${res.status}`;
-    throw new Error(message);
+    throw new ApiError(message, res.status, body?.code);
   }
 
   if (res.status === 204) {

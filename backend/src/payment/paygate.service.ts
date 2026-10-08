@@ -7,6 +7,7 @@ import {
   PaymentProviderOption,
   CryptoCoinOption,
 } from './payment-gateway.interface';
+import { PaymentProviderUnavailableException, describeRequestError } from './payment-errors';
 
 interface PayGateWalletResponse {
   address_in: string;
@@ -122,19 +123,36 @@ export class PayGateService implements PaymentGateway {
     this.btcWallet = this.configService.get<string>('PAYGATE_BTC_WALLET') || '';
   }
 
+  // Every PayGate API call goes through here. When PayGate is down or
+  // rejects the request (it had an hour-long outage answering everything
+  // with "400 Bad request method!"), this logs one line saying what failed
+  // and throws an error the storefront shows as "try again in a few
+  // minutes" — rather than an unhandled AxiosError surfacing to the
+  // customer as "Internal server error".
+  private async get<T>(path: string, params?: Record<string, string | number>): Promise<T> {
+    const timeout = 15_000;
+    try {
+      const res = await axios.get<T>(`${this.apiUrl}${path}`, {
+        params,
+        headers: this.headers,
+        timeout,
+      });
+      return res.data;
+    } catch (err) {
+      this.logger.error(`PayGate request failed: ${describeRequestError(err)}`);
+      throw new PaymentProviderUnavailableException();
+    }
+  }
+
   private async getActiveProviders(): Promise<PayGateProviderEntry[]> {
     if (this.providerCache && Date.now() - this.providerCache.fetchedAt < PROVIDER_CACHE_TTL_MS) {
       return this.providerCache.data;
     }
     try {
-      const res = await axios.get<PayGateProviderStatusResponse>(
-        `${this.apiUrl}/control/provider-status`,
-        { headers: this.headers },
-      );
-      this.providerCache = { data: res.data.providers, fetchedAt: Date.now() };
-      return res.data.providers;
-    } catch (err) {
-      this.logger.warn(`Failed to fetch PayGate provider list: ${err}`);
+      const data = await this.get<PayGateProviderStatusResponse>('/control/provider-status');
+      this.providerCache = { data: data.providers, fetchedAt: Date.now() };
+      return data.providers;
+    } catch {
       // Stale cache beats none; if we've never fetched successfully the
       // caller just gets an empty curated list and falls back to pay.php.
       return this.providerCache?.data ?? [];
@@ -191,24 +209,19 @@ export class PayGateService implements PaymentGateway {
 
     // Mints a one-time tracking address for this order; PayGate forwards
     // whatever crypto lands on it straight to our merchant wallet.
-    const walletRes = await axios.get<PayGateWalletResponse>(
-      `${this.apiUrl}/control/wallet.php`,
-      {
-        params: {
-          address: this.merchantWallet,
-          callback: `${appUrl}/api/webhooks/paygate?orderId=${encodeURIComponent(orderId)}`,
-        },
-        headers: this.headers,
-      },
-    );
+    const wallet = await this.get<PayGateWalletResponse>('/control/wallet.php', {
+      address: this.merchantWallet,
+      callback: `${appUrl}/api/webhooks/paygate?orderId=${encodeURIComponent(orderId)}`,
+    });
+    this.assertWalletResponse(wallet);
 
     // wallet.php returns address_in/ipn_token already URL-encoded (they're
     // designed to be dropped straight into the next URL's query string).
     // Decoding once here means every downstream use — URLSearchParams here,
     // axios params in verifyPayment — can encode normally without anything
     // needing to know it was pre-encoded, avoiding double-encoding bugs.
-    const addressIn = decodeURIComponent(walletRes.data.address_in);
-    const ipnToken = decodeURIComponent(walletRes.data.ipn_token);
+    const addressIn = decodeURIComponent(wallet.address_in);
+    const ipnToken = decodeURIComponent(wallet.ipn_token);
 
     const email = customerEmail || 'guest@eupeptides.org';
 
@@ -238,12 +251,9 @@ export class PayGateService implements PaymentGateway {
     if (this.cryptoInfoCache && Date.now() - this.cryptoInfoCache.fetchedAt < CRYPTO_INFO_CACHE_TTL_MS) {
       return this.cryptoInfoCache.data;
     }
-    const res = await axios.get<PayGateCryptoInfoResponse>(
-      `${this.apiUrl}/crypto/info.php`,
-      { headers: this.headers },
-    );
-    this.cryptoInfoCache = { data: res.data, fetchedAt: Date.now() };
-    return res.data;
+    const data = await this.get<PayGateCryptoInfoResponse>('/crypto/info.php');
+    this.cryptoInfoCache = { data, fetchedAt: Date.now() };
+    return data;
   }
 
   /**
@@ -299,31 +309,29 @@ export class PayGateService implements PaymentGateway {
     const appUrl = this.configService.get<string>('APP_URL') || 'http://localhost:3000';
 
     const [walletRes, convertRes] = await Promise.all([
-      axios.get<PayGateWalletResponse>(`${this.apiUrl}/crypto/${coinPath}/wallet.php`, {
-        params: {
-          address: wallet,
-          callback: `${appUrl}/api/webhooks/paygate?orderId=${encodeURIComponent(orderId)}`,
-        },
-        headers: this.headers,
+      this.get<PayGateWalletResponse>(`/crypto/${coinPath}/wallet.php`, {
+        address: wallet,
+        callback: `${appUrl}/api/webhooks/paygate?orderId=${encodeURIComponent(orderId)}`,
       }),
       // amountEur is the order's stored total, which is EUR (our base currency).
-      axios.get<{ status: string; value_coin: string }>(`${this.apiUrl}/crypto/${coinPath}/convert.php`, {
-        params: { from: 'EUR', value: amountEur },
-        headers: this.headers,
+      this.get<{ status: string; value_coin: string }>(`/crypto/${coinPath}/convert.php`, {
+        from: 'EUR',
+        value: amountEur,
       }),
     ]);
+    this.assertWalletResponse(walletRes);
 
     // Same pre-encoded-value caveat as the card-flow wallet.php — decoding
     // defensively here is a safe no-op if this endpoint ever returns a
     // plain (unencoded) address instead.
-    const address = decodeURIComponent(walletRes.data.address_in);
-    const ipnToken = decodeURIComponent(walletRes.data.ipn_token);
+    const address = decodeURIComponent(walletRes.address_in);
+    const ipnToken = decodeURIComponent(walletRes.ipn_token);
 
-    if (convertRes.data.status !== 'success') {
+    if (convertRes.status !== 'success') {
       throw new BadRequestException('Could not price this order in the selected coin');
     }
 
-    return { address, amountCoin: convertRes.data.value_coin, ipnToken };
+    return { address, amountCoin: convertRes.value_coin, ipnToken };
   }
 
   /**
@@ -334,23 +342,31 @@ export class PayGateService implements PaymentGateway {
    * using the ipn_token we minted ourselves and stored server-side.
    */
   async verifyPayment(ipnToken: string): Promise<NormalizedPaymentEvent | null> {
-    const res = await axios.get<PayGateStatusResponse>(
-      `${this.apiUrl}/control/payment-status.php`,
-      {
-        params: { ipn_token: ipnToken },
-        headers: this.headers,
-      },
-    );
+    const status = await this.get<PayGateStatusResponse>('/control/payment-status.php', {
+      ipn_token: ipnToken,
+    });
 
-    if (res.data.status !== 'paid') {
+    if (status.status !== 'paid') {
       return null;
     }
 
     return {
       orderId: '', // filled in by the controller from the callback's orderId query param
-      transactionId: res.data.txid_out,
+      transactionId: status.txid_out,
       status: 'paid',
     };
+  }
+
+  // A 200 response without the expected fields would otherwise turn into
+  // decodeURIComponent(undefined) → the literal string "undefined" being
+  // handed to the customer as a payment address.
+  private assertWalletResponse(wallet: PayGateWalletResponse): void {
+    if (!wallet?.address_in || !wallet?.ipn_token) {
+      this.logger.error(
+        `PayGate wallet response missing address_in/ipn_token: ${JSON.stringify(wallet).slice(0, 200)}`,
+      );
+      throw new PaymentProviderUnavailableException();
+    }
   }
 
   async parseWebhook(): Promise<NormalizedPaymentEvent | null> {

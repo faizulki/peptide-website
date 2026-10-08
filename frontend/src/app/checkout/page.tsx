@@ -7,6 +7,7 @@ import { useLanguage } from '@/contexts/LanguageContext';
 import { CURRENCY_OPTIONS, DISPLAY_CURRENCY } from '@/contexts/CurrencyContext';
 import { CheckoutData, CryptoCoinOption, AffiliateCodeInfo } from '@/types';
 import { api } from '@/lib/api';
+import { checkoutErrorMessage } from '@/lib/checkoutErrors';
 import {
   getStoredAffiliateCode,
   storeAffiliateCode,
@@ -191,8 +192,8 @@ export default function CheckoutPage() {
       } else if (response.paymentUrl) {
         window.location.href = response.paymentUrl;
       }
-    } catch (err: any) {
-      setError(err.message || t('checkout.failedGeneric'));
+    } catch (err) {
+      setError(checkoutErrorMessage(err, t));
       setLoading(false);
     }
   };

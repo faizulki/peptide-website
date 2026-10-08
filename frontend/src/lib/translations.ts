@@ -118,7 +118,11 @@ const en = {
   'checkout.proceedToPayment': 'Proceed to Payment',
   'checkout.choosePaymentProvider': 'Choose a Payment Provider',
   'checkout.choosePaymentProviderDesc': "Select how you'd like to pay. You'll be taken straight to that provider.",
-  'checkout.failedGeneric': 'Failed to process checkout',
+  'checkout.failedGeneric': 'Something went wrong while starting the payment. Please try again.',
+  'checkout.providerUnavailable':
+    "We couldn't start the payment because our payment provider isn't responding right now. Please try again in a few minutes — nothing has been charged.",
+  'checkout.currencyUnavailable':
+    'Paying in this currency is temporarily unavailable. Please choose EUR, or try again in a few minutes.',
   'checkout.missingCartSession': 'Missing cart session, please refresh and try again',
   'checkout.discountCode': 'Discount or referral code',
   'checkout.discountCodePlaceholder': 'Enter code',
@@ -289,7 +293,11 @@ const sv: Record<TranslationKey, string> = {
   'checkout.proceedToPayment': 'Gå vidare till betalning',
   'checkout.choosePaymentProvider': 'Välj en betalningsleverantör',
   'checkout.choosePaymentProviderDesc': 'Välj hur du vill betala. Du tas direkt till den leverantören.',
-  'checkout.failedGeneric': 'Det gick inte att genomföra köpet',
+  'checkout.failedGeneric': 'Något gick fel när betalningen skulle startas. Försök igen.',
+  'checkout.providerUnavailable':
+    'Vi kunde inte starta betalningen eftersom vår betalningsleverantör inte svarar just nu. Försök igen om några minuter — inget har debiterats.',
+  'checkout.currencyUnavailable':
+    'Betalning i den här valutan är tillfälligt otillgänglig. Välj EUR eller försök igen om några minuter.',
   'checkout.missingCartSession': 'Varukorgssessionen saknas, ladda om sidan och försök igen',
   'checkout.discountCode': 'Rabatt- eller referenskod',
   'checkout.discountCodePlaceholder': 'Ange kod',
