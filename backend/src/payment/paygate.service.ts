@@ -62,6 +62,10 @@ const EXCLUDED_PROVIDER_IDS = [
   'blockchaincom',
   'particle',
   'sardine',
+  'paypal',
+  'robinhood',
+  'cashapp',
+  'ideal',
 ];
 
 // Per PayGate's docs, these providers are hard-locked to one settlement
