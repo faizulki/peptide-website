@@ -128,7 +128,7 @@ const en = {
     'Depending on the currency you choose, the currency shown by the payment provider may differ, but the amount you pay always corresponds to exactly the same total as your order — you always pay the right price.',
   'checkout.howPaymentWorks.step5': 'The payment can take up to 24 hours to go through before it is confirmed.',
   'checkout.howPaymentWorks.warning':
-    'IMPORTANT: Never press the back button during the payment process — it can interrupt your payment.',
+    'IMPORTANT: Never press the back button or reload the page during the payment process — it can interrupt your payment.',
   'checkout.failedGeneric': 'Something went wrong while starting the payment. Please try again.',
   'checkout.providerUnavailable':
     "We couldn't start the payment because our payment provider isn't responding right now. Please try again in a few minutes — nothing has been charged.",
@@ -314,7 +314,7 @@ const sv: Record<TranslationKey, string> = {
     'Beroende på vilken valuta du väljer kan valutan skilja sig hos betalningsleverantören, men beloppet du betalar motsvarar alltid exakt samma summa som din beställning — du betalar alltid rätt pris.',
   'checkout.howPaymentWorks.step5': 'Betalningen kan ta upp till 24 timmar att gå igenom innan den är bekräftad.',
   'checkout.howPaymentWorks.warning':
-    'VIKTIGT: Tryck aldrig på bakåtknappen under betalningsprocessen — det kan avbryta din betalning.',
+    'VIKTIGT: Tryck aldrig på bakåtknappen eller ladda om sidan under betalningsprocessen — det kan avbryta din betalning.',
   'checkout.failedGeneric': 'Något gick fel när betalningen skulle startas. Försök igen.',
   'checkout.providerUnavailable':
     'Vi kunde inte starta betalningen eftersom vår betalningsleverantör inte svarar just nu. Försök igen om några minuter — inget har debiterats.',
