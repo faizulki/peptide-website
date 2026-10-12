@@ -10,6 +10,7 @@ export interface Product {
   image: string;
   category: string;
   inStock: boolean;
+  freeShipping?: boolean;
   extendedInfo?: {
     specifications: string[];
     usage: string;

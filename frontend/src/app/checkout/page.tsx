@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
-import { CURRENCY_OPTIONS, DISPLAY_CURRENCY } from '@/contexts/CurrencyContext';
+import { CURRENCY_OPTIONS, DISPLAY_CURRENCY, formatAmount, useCurrency } from '@/contexts/CurrencyContext';
 import { CheckoutData, CryptoCoinOption, AffiliateCodeInfo } from '@/types';
 import { api } from '@/lib/api';
 import { checkoutErrorMessage } from '@/lib/checkoutErrors';
@@ -94,6 +94,7 @@ export default function CheckoutPage() {
   const { cart, loading: cartLoading, getTotalPrice } = useCart();
   const { user } = useAuth();
   const { t, language } = useLanguage();
+  const { formatPrice } = useCurrency();
   const localizedCountryOptions = countryOptions.map((c) => ({
     value: c.value,
     label: c.label[language],
@@ -106,6 +107,11 @@ export default function CheckoutPage() {
   );
   const [providerOptions, setProviderOptions] = useState<
     { id: string; name: string; url: string }[] | null
+  >(null);
+  // Shown above the provider list, so the customer sees the exact amount
+  // (shipping included) before leaving for the provider.
+  const [amountDue, setAmountDue] = useState<
+    { amount: number; currency: string; shippingEur: number } | null
   >(null);
   const [cryptoCheckout, setCryptoCheckout] = useState<
     { orderId: string; coins: CryptoCoinOption[] } | null
@@ -206,6 +212,9 @@ export default function CheckoutPage() {
         // A curated provider list (see backend) — shown instead of
         // PayGate's own selector so we can leave specific providers out.
         setProviderOptions(response.providers);
+        if (response.amountDue) {
+          setAmountDue({ ...response.amountDue, shippingEur: Number(response.order.shipping) || 0 });
+        }
         setLoading(false);
       } else if (response.paymentUrl) {
         window.location.href = response.paymentUrl;
@@ -250,6 +259,21 @@ export default function CheckoutPage() {
           <p className="text-gray-600 mb-6">
             {t('checkout.choosePaymentProviderDesc')}
           </p>
+          {amountDue && (
+            <div className="mb-6 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 rounded-lg bg-gray-50 border border-gray-200 p-4">
+              <span className="font-medium text-gray-700">{t('checkout.amountDue')}</span>
+              <span className="text-right">
+                <span className="block text-2xl font-bold text-gray-900" data-testid="amount-due">
+                  {formatAmount(amountDue.amount, amountDue.currency)}
+                </span>
+                {amountDue.shippingEur > 0 && (
+                  <span className="block text-sm text-gray-500">
+                    {t('checkout.amountDueIncludes').replace('{shipping}', formatPrice(amountDue.shippingEur))}
+                  </span>
+                )}
+              </span>
+            </div>
+          )}
           <div className="space-y-3">
             {providerOptions.map((provider) => (
               <a

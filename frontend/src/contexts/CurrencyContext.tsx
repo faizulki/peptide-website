@@ -30,6 +30,12 @@ const CURRENCY_SYMBOLS: Record<string, string> = {
   DKK: 'kr',
 };
 
+// Formats an amount that is already in `currency` (no conversion).
+export function formatAmount(amount: number, currency: string): string {
+  const symbol = CURRENCY_SYMBOLS[currency] || `${currency} `;
+  return `${symbol}${amount.toFixed(2)}`;
+}
+
 interface CurrencyContextType {
   // EUR value of 1 unit of each currency, e.g. { EUR: 1, SEK: 0.0906 }.
   // Only needed for the checkout currency selector — never for the
@@ -76,9 +82,7 @@ export function CurrencyProvider({ children }: { children: React.ReactNode }) {
     if (!ready || !rates[currency]) {
       return `€${eurAmount.toFixed(2)}`;
     }
-    const amount = convert(eurAmount, currency);
-    const symbol = CURRENCY_SYMBOLS[currency] || `${currency} `;
-    return `${symbol}${amount.toFixed(2)}`;
+    return formatAmount(convert(eurAmount, currency), currency);
   };
 
   return (

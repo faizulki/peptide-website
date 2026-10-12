@@ -4,6 +4,7 @@ import { useCart } from '@/contexts/CartContext';
 import { useCurrency } from '@/contexts/CurrencyContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import Button from '@/components/ui/Button';
+import { shippingFor } from '@/lib/shipping';
 
 interface OrderSummaryProps {
   onCheckout?: () => void;
@@ -29,6 +30,7 @@ export default function OrderSummary({
     discount && discount.percent > 0
       ? Math.round(((subtotal * discount.percent) / 100) * 100) / 100
       : 0;
+  const shipping = shippingFor(cart.items);
 
   return (
     <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
@@ -48,12 +50,12 @@ export default function OrderSummary({
         )}
         <div className="flex justify-between text-gray-600">
           <span>{t('orderSummary.shipping')}</span>
-          <span>{t('orderSummary.shippingCalculated')}</span>
+          <span>{shipping > 0 ? formatPrice(shipping) : t('orderSummary.freeShipping')}</span>
         </div>
         <div className="border-t pt-2 mt-2">
           <div className="flex justify-between text-lg font-semibold text-gray-900">
             <span>{t('orderSummary.total')}</span>
-            <span>{formatPrice(subtotal - discountAmount)}</span>
+            <span>{formatPrice(subtotal - discountAmount + shipping)}</span>
           </div>
         </div>
       </div>

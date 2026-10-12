@@ -68,6 +68,7 @@ const EXCLUDED_PROVIDER_IDS = [
   'ideal',
   'venmo',
   'creditcard',
+  'banxa',
 ];
 
 // Per PayGate's docs, these providers are hard-locked to one settlement

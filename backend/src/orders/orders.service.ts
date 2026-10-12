@@ -22,6 +22,10 @@ import { PayGateService } from '../payment/paygate.service';
 import { CurrencyService } from '../currency/currency.service';
 import { AffiliatesService, round2 } from '../affiliates/affiliates.service';
 
+// Flat shipping per order, in EUR. The storefront shows the same figure in
+// the cart and at checkout (frontend/src/lib/shipping.ts) — keep them equal.
+export const SHIPPING_FEE_EUR = 7;
+
 @Injectable()
 export class OrdersService {
   constructor(
@@ -48,6 +52,8 @@ export class OrdersService {
     paymentUrl?: string;
     providers?: PaymentProviderOption[];
     cryptoCoins?: CryptoCoinOption[];
+    // What the payment provider will charge, in the customer's currency.
+    amountDue?: { amount: number; currency: string };
   }> {
     const cart = await this.cartRepository.findOne({
       where: userId ? { userId } : { guestId: checkoutDto.guestId },
@@ -105,8 +111,8 @@ export class OrdersService {
       ? round2(((subtotal - discount) * Number(affiliate.commissionPercent)) / 100)
       : 0;
 
-    // Flat €10 shipping, waived only when every item in the cart is flagged free-shipping.
-    const shipping = allFreeShipping ? 0 : 10;
+    // Flat shipping, waived only when every item in the cart is flagged free-shipping.
+    const shipping = allFreeShipping ? 0 : SHIPPING_FEE_EUR;
     const total = round2(subtotal - discount + shipping);
 
     // Generate order number
@@ -190,6 +196,8 @@ export class OrdersService {
       order: savedOrder,
       paymentUrl: paymentRequest.paymentUrl,
       providers: paymentRequest.providers,
+      // Rounded the same way the amount is sent to PayGate.
+      amountDue: { amount: round2(gatewayAmount), currency },
     };
   }
 

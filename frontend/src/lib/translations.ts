@@ -89,7 +89,7 @@ const en = {
   'orderSummary.subtotal': 'Subtotal',
   'orderSummary.discount': 'Discount',
   'orderSummary.shipping': 'Shipping',
-  'orderSummary.shippingCalculated': 'Calculated at checkout',
+  'orderSummary.freeShipping': 'Free',
   'orderSummary.total': 'Total',
   'orderSummary.proceedToCheckout': 'Proceed to Checkout',
 
@@ -118,6 +118,8 @@ const en = {
   'checkout.proceedToPayment': 'Proceed to Payment',
   'checkout.choosePaymentProvider': 'Choose a Payment Provider',
   'checkout.choosePaymentProviderDesc': "Select how you'd like to pay. You'll be taken straight to that provider.",
+  'checkout.amountDue': 'Amount to pay',
+  'checkout.amountDueIncludes': 'incl. {shipping} shipping',
   'checkout.howPaymentWorks.title': 'When and how payment happens',
   'checkout.howPaymentWorks.step1': 'You check out and complete your purchase.',
   'checkout.howPaymentWorks.step2':
@@ -275,7 +277,7 @@ const sv: Record<TranslationKey, string> = {
   'orderSummary.subtotal': 'Delsumma',
   'orderSummary.discount': 'Rabatt',
   'orderSummary.shipping': 'Frakt',
-  'orderSummary.shippingCalculated': 'Beräknas i kassan',
+  'orderSummary.freeShipping': 'Gratis',
   'orderSummary.total': 'Totalt',
   'orderSummary.proceedToCheckout': 'Gå till kassan',
 
@@ -304,6 +306,8 @@ const sv: Record<TranslationKey, string> = {
   'checkout.proceedToPayment': 'Gå vidare till betalning',
   'checkout.choosePaymentProvider': 'Välj en betalningsleverantör',
   'checkout.choosePaymentProviderDesc': 'Välj hur du vill betala. Du tas direkt till den leverantören.',
+  'checkout.amountDue': 'Att betala',
+  'checkout.amountDueIncludes': 'inkl. {shipping} frakt',
   'checkout.howPaymentWorks.title': 'När och hur betalningen sker',
   'checkout.howPaymentWorks.step1': 'Du checkar ut och genomför ditt köp.',
   'checkout.howPaymentWorks.step2':

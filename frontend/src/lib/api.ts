@@ -91,10 +91,11 @@ export const api = {
     checkoutData: CheckoutData,
     guestId: string,
   ): Promise<{
-    order: { id: string; orderNumber: string };
+    order: { id: string; orderNumber: string; shipping: number };
     paymentUrl?: string;
     providers?: { id: string; name: string; url: string }[];
     cryptoCoins?: CryptoCoinOption[];
+    amountDue?: { amount: number; currency: string };
   }> =>
     request('/orders/checkout', {
       method: 'POST',
