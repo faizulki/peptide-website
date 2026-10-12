@@ -66,6 +66,8 @@ const EXCLUDED_PROVIDER_IDS = [
   'robinhood',
   'cashapp',
   'ideal',
+  'venmo',
+  'creditcard',
 ];
 
 // Per PayGate's docs, these providers are hard-locked to one settlement
